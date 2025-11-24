@@ -145,7 +145,7 @@ function renderAll() {
   top.forEach(c => topRow.appendChild(crearCol(c)));
   bottom.forEach(c => bottomRow.appendChild(crearCol(c)));
 
-  requestAnimationFrame(drawLines);
+  // requestAnimationFrame(drawLines);  // líneas desactivadas
 }
 
 // -------------------- LINES --------------------
@@ -206,7 +206,7 @@ function drawLines() {
   });
 }
 
-window.addEventListener('resize', ()=> { requestAnimationFrame(drawLines); });
+window.addEventListener('resize', ()=> { // requestAnimationFrame(drawLines);  // líneas desactivadas });
 document.getElementById('mallaWrapper').addEventListener('scroll', ()=> requestAnimationFrame(drawLines));
 
 // -------------------- DETALLE --------------------
@@ -234,7 +234,7 @@ searchInput.addEventListener('input', (e)=> {
     });
     col.style.display = anyVisible ? '' : 'none';
   });
-  requestAnimationFrame(drawLines);
+  // requestAnimationFrame(drawLines);  // líneas desactivadas
 });
 
 // -------------------- THEME --------------------
