@@ -1,88 +1,112 @@
-// script.js - versión sin líneas entre cursos
+// script.js - colorizado por ciclo + por rama (versión final decorada)
+// NOTA: Si despliegas en GitHub Pages cambia el href del PDF en index.html a "./INFOSIL.pdf"
 
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 
 let mapaCursos = {};
-let estado = JSON.parse(localStorage.getItem("estadoCursos") || "{}");
+let estado = JSON.parse(localStorage.getItem('estadoCursos') || '{}');
 
-// DOM
+// ----------------------
+// Ramas / clasificación (usé la propuesta A)
+const ramas = {
+  "rama-ciencias": [
+    "BIOLOGÍA","QUÍMICA GENERAL","QUÍMICA ORGÁNICA","BIOQUÍMICA APLICADA A LA NUTRICIÓN",
+    "BIOQUÍMICA ALIMENTARIA","BROMATOLOGÍA DE LOS ALIMENTOS","MICROBIOLOGÍA Y PARASITOLOGÍA APLICADA A LA NUTRICIÓN",
+    "FISIOPATOLOGÍA DE LA NUTRICIÓN","TOXICOLOGÍA ALIMENTARIA","FOOD TECHNOLOGY"
+  ],
+  "rama-nutricion": [
+    "INTRODUCCIÓN A LA NUTRICIÓN Y VIDA SALUDABLE","FUNDAMENTOS DE LA SALUD: MACRO Y MICRONUTRIENTES",
+    "NUTRICIÓN EN ETAPAS FISIOLÓGICAS","VALORACIÓN NUTRICIONAL EN ETAPAS DE LA VIDA",
+    "DIETÉTICA Y PROGRAMACIÓN DE DIETAS","DIETOTERAPIA DEL NIÑO Y DEL ADULTO",
+    "NUTRICIÓN CLÍNICA","NUTRICIÓN CLÍNICA II","NUTRICIÓN CLÍNICA III","NUTRICIÓN CLÍNICA IV",
+    "SOPORTE NUTRICIONAL","ALIMENTOS FUNCIONALES Y NUTRACEÚTICOS","NUTRICIÓN EN EL EJERCICIO Y DEPORTE",
+    "SUPLEMENTACIÓN NUTRICIONAL EN DEPORTISTAS"
+  ],
+  "rama-publica": [
+    "SITUACIÓN ALIMENTARIA Y NUTRICIONAL","EPIDEMIOLOGÍA NUTRICIONAL","NUTRICIÓN PÚBLICA",
+    "DISEÑO DE PROGRAMAS Y POLÍTICAS EN NUTRICIÓN PÚBLICA","PRÁCTICAS PRE-PROFESIONALES EN LA COMUNIDAD",
+    "EVALUACIÓN Y DIAGNÓSTICO EN NUTRICIÓN PÚBLICA"
+  ],
+  "rama-gestion": [
+    "ADMINISTRACIÓN PARA LOS NEGOCIOS","MARKETING","GESTIÓN EN SERVICIOS Y NEGOCIOS DE ALIMENTACIÓN Y NUTRICIÓN",
+    "OPORTUNIDADES DE NEGOCIOS","FUNDAMENTOS CONTABLES Y FINANCIEROS","PRINCIPIOS DE ECONOMÍA"
+  ],
+  "rama-comunicacion": [
+    "LENGUAJE Y COMUNICACIÓN I","LENGUAJE Y COMUNICACIÓN II","COMUNICACIÓN CIENTÍFICA",
+    "EDUCACIÓN Y COMUNICACIÓN EFECTIVA EN NUTRICIÓN","PSICOLOGÍA APLICADA A LA NUTRICIÓN",
+    "ÉTICA Y CIUDADANÍA","FUNDAMENTOS DEL LIDERAZGO SOSTENIBLE"
+  ],
+  "rama-deporte": [
+    "EVALUACIÓN NUTRICIONAL EN DEPORTISTAS","TRATAMIENTO DEL EJERCICIO SALUDABLE",
+    "PLANIFICACIÓN Y DISEÑO DE DIETAS EN DEPORTISTAS","COACHING EN LA NUTRICIÓN DEPORTIVA"
+  ],
+  "rama-electivo": [
+    "REALIDAD NACIONAL Y GLOBALIZACIÓN","FUNDAMENTOS EN COMPETENCIAS DIGITALES",
+    "ANTROPOLOGÍA NUTRICIONAL","PRIMEROS AUXILIOS EN SALUD","INTERACCIÓN FÁRMACO NUTRIENTE",
+    "TÉCNICAS DE COMPORTAMIENTO","NEUROCIENCIAS APLICADAS A LA NUTRICIÓN","NUTRICIÓN FUNCIONAL E INVESTIGACIÓN"
+  ]
+};
+
+// create reverse map course->rama for quick lookup
+const cursoARama = {};
+Object.entries(ramas).forEach(([rama, arr]) => arr.forEach(c => cursoARama[c] = rama));
+
+// ---------------------- DOM refs
 const topRow = $("#topRow");
 const bottomRow = $("#bottomRow");
 const detalleContenido = $("#detalleContenido");
-
-// Controles
 const searchInput = $("#searchInput");
+const filterBranch = $("#filterBranch");
 const toggleThemeBtn = $("#toggleTheme");
 const resetBtn = $("#resetBtn");
 const exportBtn = $("#exportBtn");
 const exportPdfBtn = $("#exportPdfBtn");
 
-// Nube (Firebase)
-const saveCloudBtn = $("#saveCloudBtn");
-const loadCloudBtn = $("#loadCloudBtn");
-let firestore = null;
-let firebaseConfigured = false;
+// populate filterBranch select
+Object.keys(ramas).forEach(r => {
+  const opt = document.createElement("option");
+  opt.value = r;
+  opt.textContent = r.replace("rama-","").replace("-"," ").toUpperCase();
+  filterBranch.appendChild(opt);
+});
 
-// ----------------------------
-// Cargar cursos
-// ----------------------------
-async function cargarCursos() {
-  try {
-    const res = await fetch("cursos.json", { cache: "no-store" });
-    mapaCursos = await res.json();
-    renderAll();
-  } catch (e) {
-    console.error("Error cargando cursos.json", e);
-    $("#mallaWrapper").innerHTML = `<p>Error cargando cursos.json</p>`;
-  }
-}
-
-// ----------------------------
-// Helpers
-// ----------------------------
+// ---------------------- Helpers
 const estaAprobado = c => estado[c] === true;
-const guardarLocal = () =>
-  localStorage.setItem("estadoCursos", JSON.stringify(estado));
+const guardarLocal = () => localStorage.setItem('estadoCursos', JSON.stringify(estado));
 
+// calcula dependientes
 function calcularDependientes(map) {
   const dep = {};
-  Object.keys(map).forEach(ciclo =>
-    Object.keys(map[ciclo]).forEach(c => (dep[c] = 0))
-  );
-
+  Object.keys(map).forEach(ciclo => Object.keys(map[ciclo]).forEach(c => dep[c] = 0));
   Object.keys(map).forEach(ciclo => {
-    Object.keys(map[ciclo]).forEach(cur => {
-      mapaCursos[ciclo][cur].forEach(pr => {
-        if (dep[pr] != null) dep[pr]++;
-      });
+    Object.keys(map[ciclo]).forEach(curso => {
+      (map[ciclo][curso] || []).forEach(p => { if (dep[p] != null) dep[p]++ });
     });
   });
-
   return dep;
 }
 
-// ----------------------------
-// Render
-// ----------------------------
+// ---------------------- Render
 function renderAll() {
   topRow.innerHTML = "";
   bottomRow.innerHTML = "";
 
-  const orden = Object.keys(mapaCursos).sort((a, b) => {
-    const na = parseInt(a.replace(/\D/g, "")) || 0;
-    const nb = parseInt(b.replace(/\D/g, "")) || 0;
+  const ciclos = Object.keys(mapaCursos).sort((a,b) => {
+    const na = parseInt(a.replace(/\D/g,'')) || 0;
+    const nb = parseInt(b.replace(/\D/g,'')) || 0;
     return na - nb;
   });
 
-  const arrTop = orden.filter(x => parseInt(x.replace(/\D/g, "")) <= 5);
-  const arrBot = orden.filter(x => parseInt(x.replace(/\D/g, "")) >= 6);
+  const topC = ciclos.filter(c => (parseInt(c.replace(/\D/g,'')) || 0) <= 5);
+  const bottomC = ciclos.filter(c => (parseInt(c.replace(/\D/g,'')) || 0) >= 6);
 
   const depCounts = calcularDependientes(mapaCursos);
 
-  const crearCol = ciclo => {
+  function crearCol(ciclo) {
     const col = document.createElement("div");
     col.className = "col-ciclo";
+    col.dataset.cycle = ciclo;
 
     const header = document.createElement("div");
     header.className = "ciclo-header";
@@ -92,214 +116,225 @@ function renderAll() {
     const lista = document.createElement("div");
     lista.className = "lista-cursos";
 
-    Object.keys(mapaCursos[ciclo]).forEach(curso => {
-      const prereq = mapaCursos[ciclo][curso];
-      const aprobado = estaAprobado(curso);
-      const desbloq = prereq.every(p => estaAprobado(p));
-
+    Object.keys(mapaCursos[ciclo]).forEach(nombreCurso => {
+      const prereqs = mapaCursos[ciclo][nombreCurso] || [];
+      const aprobado = estaAprobado(nombreCurso);
+      const desbloqueado = prereqs.every(p => estaAprobado(p));
       const btn = document.createElement("button");
       btn.className = "curso";
-      btn.dataset.nombre = curso;
 
-      const dep = depCounts[curso] || 0;
-      btn.classList.add(dep >= 4 ? "dep-4" : `dep-${dep}`);
+      // rama class
+      const rama = cursoARama[nombreCurso] || "rama-electivo";
+      btn.classList.add(rama);
 
+      // estado classes
       if (aprobado) btn.classList.add("aprobado");
-      else if (!desbloq) btn.classList.add("bloqueado");
+      else if (!desbloqueado) btn.classList.add("bloqueado");
       else btn.classList.add("pendiente");
+
+      btn.dataset.nombre = nombreCurso;
 
       const title = document.createElement("div");
       title.className = "curso-nombre";
-      title.textContent = curso;
+      title.textContent = nombreCurso;
       btn.appendChild(title);
 
-      if (prereq.length > 0) {
-        const badge = document.createElement("div");
-        badge.className = "curso-prereq";
-        badge.textContent = prereq.every(p => estaAprobado(p))
-          ? "Prer. OK"
-          : `${prereq.filter(p => !estaAprobado(p)).length} prereq`;
-        btn.appendChild(badge);
+      if (prereqs.length > 0) {
+        const meta = document.createElement("div");
+        meta.className = "curso-meta curso-prereq";
+        meta.textContent = `${prereqs.filter(p => !estaAprobado(p)).length} prereq`;
+        btn.appendChild(meta);
       }
 
+      // dependientes badge
+      const dep = depCounts[nombreCurso] || 0;
       if (dep > 0) {
-        const b2 = document.createElement("div");
-        b2.className = "dependientes-badge";
-        b2.textContent = dep;
-        btn.appendChild(b2);
+        const db = document.createElement("div");
+        db.className = "dependientes-badge";
+        db.textContent = dep;
+        btn.appendChild(db);
       }
 
+      // click
       btn.addEventListener("click", () => {
-        if (!aprobado && !desbloq) return;
-
-        estado[curso] = !aprobado;
-        if (!estado[curso]) delete estado[curso];
-
+        if (!desbloqueado && !aprobado) return;
+        estado[nombreCurso] = !aprobado;
+        if (!estado[nombreCurso]) delete estado[nombreCurso];
         guardarLocal();
         renderAll();
-        mostrarDetalle(curso, prereq);
+        mostrarDetalle(nombreCurso, prereqs);
       });
 
-      btn.addEventListener("mouseenter", () => mostrarDetalle(curso, prereq));
+      btn.addEventListener("mouseenter", () => mostrarDetalle(nombreCurso, prereqs));
 
       lista.appendChild(btn);
     });
 
     col.appendChild(lista);
     return col;
-  };
+  }
 
-  arrTop.forEach(c => topRow.appendChild(crearCol(c)));
-  arrBot.forEach(c => bottomRow.appendChild(crearCol(c)));
+  topC.forEach(c => topRow.appendChild(crearCol(c)));
+  bottomC.forEach(c => bottomRow.appendChild(crearCol(c)));
+
+  renderLegend();
 }
 
-// ----------------------------
-// Detalle
-// ----------------------------
+// ---------------------- Detalle
 function mostrarDetalle(nombre, prereqs) {
   const aprobado = estaAprobado(nombre);
-  const lista =
-    prereqs.length > 0
-      ? `<ul>${prereqs
-          .map(p => `<li>${p}: ${estaAprobado(p) ? "✓" : "✗"}</li>`)
-          .join("")}</ul>`
-      : "<em>Sin prerrequisitos</em>";
+  const rama = cursoARama[nombre] ? cursoARama[nombre].replace("rama-","").toUpperCase() : "ELECTIVO";
+  const prereqHtml = (prereqs && prereqs.length>0) ? `<ul>${prereqs.map(p=>`<li>${p} ${estaAprobado(p)?'✓':'✗'}</li>`).join('')}</ul>` : '<em>Sin prerrequisitos</em>';
 
   detalleContenido.innerHTML = `
     <h3>${nombre}</h3>
-    <p><strong>Estado:</strong> ${
-      aprobado ? "Aprobado" : "Pendiente"
-    }</p>
+    <p><strong>Rama:</strong> ${rama}</p>
+    <p><strong>Estado:</strong> ${aprobado ? '<span style="color:#059669;font-weight:700">Aprobado</span>' : 'Pendiente'}</p>
     <p><strong>Prerrequisitos:</strong></p>
-    ${lista}
+    ${prereqHtml}
   `;
 }
 
-// ----------------------------
-// Buscador
-// ----------------------------
-searchInput.addEventListener("input", e => {
+// ---------------------- Buscador / filtro
+searchInput.addEventListener('input', (e) => {
   const q = e.target.value.toLowerCase().trim();
-
-  $$(".col-ciclo").forEach(col => {
-    let visible = false;
-    col.querySelectorAll(".curso").forEach(cur => {
-      const match = cur.dataset.nombre.toLowerCase().includes(q);
-      cur.style.display = match ? "" : "none";
-      if (match) visible = true;
-    });
-    col.style.display = visible ? "" : "none";
+  $$('.curso').forEach(c => {
+    const match = c.dataset.nombre.toLowerCase().includes(q);
+    c.style.display = match ? '' : 'none';
   });
 });
 
-// ----------------------------
-// Dark Mode
-// ----------------------------
-function setTheme(dark) {
-  document.body.classList.toggle("dark", dark);
-  localStorage.setItem("mallaThemeDark", dark);
-}
-toggleThemeBtn.addEventListener("click", () =>
-  setTheme(!document.body.classList.contains("dark"))
-);
-setTheme(localStorage.getItem("mallaThemeDark") === "true");
+filterBranch.addEventListener('change', (e) => {
+  const val = e.target.value;
+  $$('.curso').forEach(c => {
+    if (!val) { c.style.display = ''; return; }
+    c.style.display = c.classList.contains(val) ? '' : 'none';
+  });
+});
 
-// ----------------------------
-// Reset
-// ----------------------------
-resetBtn.addEventListener("click", () => {
-  if (!confirm("¿Resetear todo?")) return;
+// ---------------------- Theme
+function setTheme(d) {
+  document.body.classList.toggle('dark', !!d);
+  localStorage.setItem('mallaThemeDark', !!d);
+}
+toggleThemeBtn.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
+setTheme(localStorage.getItem('mallaThemeDark') === 'true');
+
+// ---------------------- Reset / Export
+resetBtn.addEventListener('click', () => {
+  if (!confirm('Resetear todos los cursos?')) return;
   estado = {};
   guardarLocal();
   renderAll();
 });
 
-// ----------------------------
-// Export JSON
-// ----------------------------
-exportBtn.addEventListener("click", () => {
-  const url =
-    "data:text/json;charset=utf-8," +
-    encodeURIComponent(JSON.stringify(estado, null, 2));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "estadoCursos.json";
+exportBtn.addEventListener('click', () => {
+  const data = JSON.stringify(estado, null, 2);
+  const a = document.createElement('a');
+  a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(data);
+  a.download = 'estadoCursos.json';
   a.click();
 });
 
-// ----------------------------
-// Export PDF
-// ----------------------------
-exportPdfBtn.addEventListener("click", () => {
+// Exportar PDF con jsPDF (lista legible)
+exportPdfBtn.addEventListener('click', () => {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  let y = 20;
-  doc.text("Malla - Estado Actual", 14, y); 
-  y += 10;
-
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  doc.setFontSize(14);
+  doc.text('Malla INFOSIL - Estado', 40, 50);
+  let y = 80;
   Object.keys(mapaCursos).forEach(ciclo => {
-    doc.text(ciclo, 14, y);
-    y += 8;
-
+    doc.setFontSize(12);
+    doc.text(ciclo, 40, y); y += 18;
     Object.keys(mapaCursos[ciclo]).forEach(curso => {
-      doc.text(
-        `- ${curso} (${estaAprobado(curso) ? "Aprobado" : "Pendiente"})`,
-        18,
-        y
-      );
-      y += 7;
-      if (y > 270) {
-        doc.addPage();
-        y = 20;
-      }
+      const estadoTxt = estaAprobado(curso) ? 'Aprobado' : 'Pendiente';
+      doc.setFontSize(10);
+      doc.text(`- ${curso} [${estadoTxt}]`, 60, y); y += 14;
+      if (y > 740) { doc.addPage(); y = 40; }
     });
-
-    y += 5;
+    y += 8;
   });
-
-  doc.save("malla.pdf");
+  doc.save('malla_estado.pdf');
 });
 
-// ----------------------------
-// Firebase (Opcional)
-// ----------------------------
+// ---------------------- Legend render
+function renderLegend() {
+  const cyclesContainer = $("#legendCycles");
+  const branchesContainer = $("#legendBranches");
+  cyclesContainer.innerHTML = '';
+  branchesContainer.innerHTML = '';
+
+  // cycles legend (we'll show cycle headers color sample)
+  const cycles = Object.keys(mapaCursos).sort((a,b)=> {
+    const na = parseInt(a.replace(/\D/g,''))||0; const nb = parseInt(b.replace(/\D/g,''))||0; return na-nb;
+  });
+  cycles.forEach(ciclo => {
+    const item = document.createElement('div'); item.className='item';
+    const sw = document.createElement('div'); sw.className='swatch';
+    // compute header background from computed style by creating temp col
+    const temp = document.createElement('div'); temp.className='col-ciclo'; temp.style.display='none';
+    temp.dataset.cycle = ciclo; document.body.appendChild(temp);
+    const headerBg = getComputedStyle(temp).background || '';
+    document.body.removeChild(temp);
+    sw.style.background = headerBg || '#ddd';
+    const label = document.createElement('div'); label.textContent = ciclo;
+    item.appendChild(sw); item.appendChild(label);
+    cyclesContainer.appendChild(item);
+  });
+
+  // branches legend
+  Object.keys(ramas).forEach(r => {
+    const item = document.createElement('div'); item.className='item';
+    const sw = document.createElement('div'); sw.className='swatch';
+    // small map of class to color
+    sw.style.background = getBranchColor(r);
+    const label = document.createElement('div'); label.textContent = r.replace('rama-','').toUpperCase();
+    item.appendChild(sw); item.appendChild(label);
+    branchesContainer.appendChild(item);
+  });
+}
+
+// mapping rama->swatch color (should match CSS borders)
+function getBranchColor(rama) {
+  switch(rama) {
+    case 'rama-ciencias': return 'linear-gradient(180deg,#ebf8ff,#dbeafe)'; // azul
+    case 'rama-nutricion': return 'linear-gradient(180deg,#ecfdf5,#dcfce7)'; // verde
+    case 'rama-publica': return 'linear-gradient(180deg,#faf5ff,#f3e8ff)'; // morado
+    case 'rama-gestion': return 'linear-gradient(180deg,#fff7ed,#fff1e6)'; // naranja
+    case 'rama-comunicacion': return 'linear-gradient(180deg,#fffbeb,#fef3c7)'; // amarillo
+    case 'rama-deporte': return 'linear-gradient(180deg,#fff1f2,#ffe4e6)'; // rojo
+    default: return 'linear-gradient(180deg,#f8fafc,#f1f5f9)'; // electivo gris
+  }
+}
+
+// ---------------------- Firebase (opcional, placeholder)
 function firebaseInit() {
   try {
     const cfg = {
-      // INCLUYE TU CONFIG SI QUIERES USAR FIREBASE
+      // pega tu firebaseConfig aquí si quieres usar nube
+      // projectId: "tu_project_id"
     };
     if (!cfg.projectId) return;
-
     firebase.initializeApp(cfg);
-    firestore = firebase.firestore();
-    firebaseConfigured = true;
-  } catch (e) {
-    console.error("Firebase error:", e);
-  }
+    window.firestore = firebase.firestore();
+  } catch (e) { console.warn('Firebase no configurado'); }
 }
 firebaseInit();
 
-saveCloudBtn.addEventListener("click", async () => {
-  if (!firebaseConfigured) return alert("Firebase no configurado");
-  await firestore.collection("mallas").doc("user1").set({
-    estado,
-    updated: Date.now()
-  });
-  alert("Guardado en la nube.");
-});
-
-loadCloudBtn.addEventListener("click", async () => {
-  if (!firebaseConfigured) return alert("Firebase no configurado");
-  const d = await firestore.collection("mallas").doc("user1").get();
-  if (!d.exists) return alert("No hay datos en nube.");
-  estado = d.data().estado || {};
-  guardarLocal();
-  renderAll();
-  alert("Cargado.");
-});
-
-// ----------------------------
-// Inicializar
-// ----------------------------
-cargarCursos();
+// ---------------------- Cargar cursos.json
+async function cargar() {
+  try {
+    const res = await fetch('cursos.json', {cache: "no-store"});
+    mapaCursos = await res.json();
+    renderAll();
+    // Fill branch select with nicer labels (after render)
+    Object.keys(ramas).forEach(r => {
+      const label = r.replace('rama-','').toUpperCase();
+      // already populated, keep order
+    });
+  } catch (e) {
+    console.error('Error cargando cursos.json', e);
+    $("#mallaArea").innerHTML = "<p>Error cargando cursos.json</p>";
+  }
+}
+cargar();
