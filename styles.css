@@ -1,149 +1,166 @@
-/* =========================
-   Styles decorativos - Malla Interactiva
-   ========================= */
-
-/* Reset */
+/* ===============================
+   ESTILOS GENERALES
+================================*/
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
 body{
-  font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;
-  background: linear-gradient(180deg,#f7fbff,#eef6ff);
+  font-family:Inter,Arial;
+  background:linear-gradient(180deg,#f7fbff,#eef6ff);
   color:#0f172a;
   padding:16px;
-  transition:background .3s,color .3s;
 }
-
-/* Topbar */
 .topbar{
+  background:linear-gradient(90deg,#0ea5e9,#7c3aed);
+  color:white;padding:14px;border-radius:12px;
   display:flex;justify-content:space-between;align-items:center;
-  gap:12px;padding:14px;border-radius:12px;background:linear-gradient(90deg,#0ea5e9,#7c3aed);
-  color:white;box-shadow:0 8px 30px rgba(2,6,23,.12);
 }
-.brand h1{font-size:20px;font-weight:700}
-.brand .subtitle{font-size:12px;opacity:.9;margin-top:4px}
 
-/* Controls */
-.controls{display:flex;gap:8px;align-items:center}
-.controls input{
-  padding:8px 10px;border-radius:8px;border:none;min-width:180px;
-  box-shadow:0 6px 18px rgba(2,6,23,.08);
+/* ===============================
+   CONTROLES SUPERIORES
+================================*/
+.controls{
+  display:flex;gap:10px;align-items:center;
 }
-.controls select, .controls button, .controls a {
-  padding:8px 10px;border-radius:8px;border:none;background:rgba(255,255,255,.12);color:white;
-  cursor:pointer;text-decoration:none;font-size:13px;
-  box-shadow:0 6px 14px rgba(2,6,23,.06);
+.controls input,
+.controls select,
+.controls button,
+.controls a{
+  padding:8px 10px;border-radius:8px;border:none;
+  background:rgba(255,255,255,.12);color:white;
+  text-decoration:none;cursor:pointer;
 }
-.controls a{display:inline-flex;align-items:center;gap:6px}
 
-/* Layout */
-main{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
-#detalle{background:white;padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,.06)}
-#detalle h2{margin-bottom:8px}
+/* ===============================
+   LAYOUT PRINCIPAL
+================================*/
+main{
+  display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px;
+}
+#detalle{
+  background:white;padding:14px;border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
 
-/* Malla area */
-#mallaArea{background:transparent;padding:6px;border-radius:12px;overflow:auto}
-.row{display:flex;gap:18px;padding:8px;align-items:flex-start;min-height:220px}
+/* ===============================
+   MALLA — FILAS SUPERIOR E INFERIOR
+================================*/
+.row{display:flex;gap:18px;padding:8px;}
 
-/* Columnas de ciclo */
+/* ===============================
+   COLUMNAS DE CICLO
+================================*/
 .col-ciclo{
-  min-width:240px;border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(2,6,23,.06);
-  display:flex;flex-direction:column;gap:10px;transition:transform .22s;
+  min-width:240px;background:white;border-radius:12px;
+  padding:12px;display:flex;flex-direction:column;gap:10px;
+  box-shadow:0 12px 28px rgba(0,0,0,.06);
 }
-.col-ciclo:hover{transform:translateY(-8px)}
+.ciclo-header{
+  font-weight:800;color:white;padding:8px;border-radius:8px;
+  text-align:center;
+}
 
-.ciclo-header{font-weight:800;padding:8px;border-radius:8px;color:white;display:inline-block}
-
-/* Lista de cursos vertical */
-.lista-cursos{display:flex;flex-direction:column;gap:10px;margin-top:4px}
-
-/* Curso tarjeta */
+/* ===============================
+   CURSO — ESTILO BASE (GRIS)
+================================*/
 .curso{
-  background:linear-gradient(180deg,#ffffff,#fbfdff);
-  border-radius:10px;padding:10px;border:1px solid rgba(15,23,42,.06);
-  cursor:pointer;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;
-  transition:transform .18s,box-shadow .18s;
+  background:linear-gradient(180deg,#f1f5f9,#e2e8f0) !important;
+  border-radius:10px;padding:10px;
+  border-left:10px solid transparent !important;
+  position:relative;
+  display:flex;flex-direction:column;gap:6px;
+  cursor:pointer;color:#334155 !important;
+  opacity:.92;transition:.25s;
 }
-.curso:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(15,23,42,.08)}
-.curso .curso-nombre{font-weight:700;font-size:13px}
-.curso .curso-meta{font-size:12px;color:#475569}
-
-/* estado badges */
-.curso .curso-prereq{position:absolute;left:10px;bottom:10px;padding:6px 8px;border-radius:999px;font-size:12px;background:rgba(15,23,42,.05)}
-.dependientes-badge{position:absolute;right:10px;top:10px;padding:6px 8px;border-radius:999px;font-size:12px;background:rgba(0,0,0,.06)}
-
-/* ====== Cursos de INGLÉS (color amarillo) ====== */
-.rama-ingles {
-  background: linear-gradient(180deg,#fffbea,#fef08a) !important;
-  border-left:6px solid #facc15 !important;
+.curso:hover{
+  transform:translateY(-6px);
+  box-shadow:0 14px 28px rgba(0,0,0,.08);
 }
 
-/* ====== Cursos aprobados (verde fuerte claro) ====== */
-.curso.aprobado {
-  background: linear-gradient(180deg,#dcfce7,#bbf7d0) !important;
-  border: 2px solid #16a34a !important;
-  color:#064e3b !important;
-  box-shadow:0 6px 18px rgba(22,163,74,.25) !important;
+/* ===============================
+   BARRA LATERAL — COLOR ORIGINAL
+================================*/
+.curso::before{
+  content:"";position:absolute;left:0;top:0;
+  width:10px;height:100%;border-radius:10px 0 0 10px;
 }
 
-/* ====== Cursos desbloqueados (prerrequisitos completos → azul) ====== */
-.curso.pendiente.desbloqueado {
-  background: linear-gradient(180deg,#dbeafe,#bfdbfe) !important;
-  border-left:4px solid #3b82f6 !important;
+/* Colores laterales por rama */
+.rama-ciencias::before{background:#3B82F6}
+.rama-nutricion::before{background:#22C55E}
+.rama-publica::before{background:#A855F7}
+.rama-gestion::before{background:#F97316}
+.rama-comunicacion::before{background:#EAB308}
+.rama-deporte::before{background:#EF4444}
+.rama-electivo::before{background:#6B7280}
+.rama-ingles::before{background:#FACC15}
+
+/* ===============================
+   ESTADO: CURSO DESBLOQUEADO
+   → Recupera su color original COMPLETO
+================================*/
+.curso.desbloqueado{
+  opacity:1!important;
 }
 
-/* ====== Bloqueados ====== */
-.curso.bloqueado {
-  opacity:.75;
+/* Restauración de colores por rama */
+.curso.desbloqueado.rama-ciencias{
+  background:linear-gradient(180deg,#f0f9ff,#e0f2fe)!important;
+}
+.curso.desbloqueado.rama-nutricion{
+  background:linear-gradient(180deg,#ecfdf5,#dcfce7)!important;
+}
+.curso.desbloqueado.rama-publica{
+  background:linear-gradient(180deg,#faf5ff,#f3e8ff)!important;
+}
+.curso.desbloqueado.rama-gestion{
+  background:linear-gradient(180deg,#fff7ed,#fff1e6)!important;
+}
+.curso.desbloqueado.rama-comunicacion{
+  background:linear-gradient(180deg,#fffbeb,#fef3c7)!important;
+}
+.curso.desbloqueado.rama-deporte{
+  background:linear-gradient(180deg,#fff1f2,#ffe4e6)!important;
+}
+.curso.desbloqueado.rama-electivo{
+  background:linear-gradient(180deg,#f8fafc,#f1f5f9)!important;
+}
+.curso.desbloqueado.rama-ingles{
+  background:linear-gradient(180deg,#fffbea,#fef08a)!important;
 }
 
-/* ==========================
-   Colores por RAMA (resto)
-   ========================== */
-.rama-ciencias { background: linear-gradient(180deg,#f0f9ff,#e0f2fe); border-left:6px solid #3B82F6; }
-.rama-nutricion { background: linear-gradient(180deg,#ecfdf5,#dcfce7); border-left:6px solid #22C55E; }
-.rama-publica { background: linear-gradient(180deg,#faf5ff,#f3e8ff); border-left:6px solid #A855F7; }
-.rama-gestion { background: linear-gradient(180deg,#fff7ed,#fff1e6); border-left:6px solid #F97316; }
-.rama-comunicacion { background: linear-gradient(180deg,#fffbeb,#fef3c7); border-left:6px solid #EAB308; }
-.rama-deporte { background: linear-gradient(180deg,#fff1f2,#ffe4e6); border-left:6px solid #EF4444; }
-.rama-electivo { background: linear-gradient(180deg,#f8fafc,#f1f5f9); border-left:6px solid #6B7280; }
-
-/* ==========================
-   Colores por CICLO
-   ========================== */
-:root{
-  --cycle-0: linear-gradient(180deg,#111827,#0f172a);
-  --cycle-1: linear-gradient(180deg,#60a5fa,#3b82f6);
-  --cycle-2: linear-gradient(180deg,#34d399,#10b981);
-  --cycle-3: linear-gradient(180deg,#a78bfa,#7c3aed);
-  --cycle-4: linear-gradient(180deg,#f97316,#fb923c);
-  --cycle-5: linear-gradient(180deg,#facc15,#eab308);
-  --cycle-6: linear-gradient(180deg,#ef4444,#f43f5e);
-  --cycle-7: linear-gradient(180deg,#94a3b8,#64748b);
-  --cycle-8: linear-gradient(180deg,#06b6d4,#0891b2);
-  --cycle-9: linear-gradient(180deg,#8b5cf6,#6d28d9);
-  --cycle-10: linear-gradient(180deg,#06b6d4,#06b6d4);
+/* ===============================
+   ESTADO: APROBADO (VERDE)
+================================*/
+.curso.aprobado{
+  background:linear-gradient(180deg,#dcfce7,#bbf7d0)!important;
+  border:2px solid #16a34a!important;
+  color:#064e3b!important;
 }
 
-.col-ciclo[data-cycle="Ciclo 0 (Nivelación)"] .ciclo-header{background:var(--cycle-0)}
-.col-ciclo[data-cycle="Ciclo 1"] .ciclo-header{background:var(--cycle-1)}
-.col-ciclo[data-cycle="Ciclo 2"] .ciclo-header{background:var(--cycle-2)}
-.col-ciclo[data-cycle="Ciclo 3"] .ciclo-header{background:var(--cycle-3)}
-.col-ciclo[data-cycle="Ciclo 4"] .ciclo-header{background:var(--cycle-4)}
-.col-ciclo[data-cycle="Ciclo 5"] .ciclo-header{background:var(--cycle-5)}
-.col-ciclo[data-cycle="Ciclo 6"] .ciclo-header{background:var(--cycle-6)}
-.col-ciclo[data-cycle="Ciclo 7"] .ciclo-header{background:var(--cycle-7)}
-.col-ciclo[data-cycle="Ciclo 8"] .ciclo-header{background:var(--cycle-8)}
-.col-ciclo[data-cycle="Ciclo 9"] .ciclo-header{background:var(--cycle-9)}
-.col-ciclo[data-cycle="Ciclo 10"] .ciclo-header{background:var(--cycle-10)}
+/* ===============================
+   PRERREQUISITOS / INFO
+================================*/
+.curso-nombre{font-weight:700}
+.curso-meta{font-size:12px;color:#475569}
+.curso-prereq{
+  background:rgba(0,0,0,.05);
+  padding:4px 6px;border-radius:8px;
+  position:absolute;bottom:8px;left:12px;
+}
+.dependientes-badge{
+  background:rgba(0,0,0,.06);
+  padding:4px 6px;border-radius:8px;
+  position:absolute;top:8px;right:12px;
+}
 
-/* Legend styles */
-.legend{margin-top:12px;font-size:13px}
-.legend .item{display:flex;gap:8px;align-items:center;margin:6px 0}
-.legend .swatch{width:38px;height:22px;border-radius:6px;border:1px solid rgba(15,23,42,.06)}
+/* ===============================
+   DARK THEME
+================================*/
+body.dark{
+  background:#0f172a;color:#e2e8f0;
+}
 
-footer{text-align:center;margin-top:18px;color:#475569}
-
-/* Dark theme */
-body.dark{background:linear-gradient(180deg,#031025,#041226);color:#e6eef8}
-body.dark .topbar{background:linear-gradient(90deg,#0b1220,#0b1220)}
-body.dark .col-ciclo{box-shadow:0 10px 30px rgba(0,0,0,.35)}
+/* ===============================
+   LEYENDA
+================================*/
+.legend .item{display:flex;align-items:center;gap:8px;margin:6px 0}
+.legend .swatch{width:40px;height:20px;border-radius:6px}
