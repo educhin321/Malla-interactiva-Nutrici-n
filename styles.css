@@ -1,101 +1,139 @@
-/* Reset & base */
+/* =========================
+   Styles decorativos - Malla Interactiva
+   ========================= */
+
+/* Reset */
 *{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
 body{
-  font-family:"Segoe UI",Roboto,Arial,sans-serif;
-  background:#f4f6f8;color:#111;
-  padding:12px;
+  font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  background: linear-gradient(180deg,#f7fbff,#eef6ff);
+  color:#0f172a;
+  padding:16px;
   transition:background .3s,color .3s;
 }
 
-/* TOPBAR */
+/* Topbar */
 .topbar{
   display:flex;justify-content:space-between;align-items:center;
-  background:#111827;color:#fff;padding:12px;border-radius:8px;gap:12px;
-  flex-wrap:wrap;
+  gap:12px;padding:14px;border-radius:12px;background:linear-gradient(90deg,#0ea5e9,#7c3aed);
+  color:white;box-shadow:0 8px 30px rgba(2,6,23,.12);
 }
-.topbar .left h1{font-size:18px;margin-bottom:4px}
-.topbar .meta{font-size:12px;color:#cbd5e1}
+.brand h1{font-size:20px;font-weight:700}
+.brand .subtitle{font-size:12px;opacity:.9;margin-top:4px}
+
+/* Controls */
 .controls{display:flex;gap:8px;align-items:center}
 .controls input{
-  padding:8px;border-radius:6px;border:1px solid #374151;background:#fff;
-  min-width:160px;
+  padding:8px 10px;border-radius:8px;border:none;min-width:180px;
+  box-shadow:0 6px 18px rgba(2,6,23,.08);
 }
-.controls button,a{
-  padding:8px 10px;border-radius:6px;border:none;background:#374151;color:#fff;
+.controls select, .controls button, .controls a {
+  padding:8px 10px;border-radius:8px;border:none;background:rgba(255,255,255,.12);color:white;
   cursor:pointer;text-decoration:none;font-size:13px;
+  box-shadow:0 6px 14px rgba(2,6,23,.06);
 }
-.controls button:hover,a:hover{opacity:.95}
+.controls a{display:inline-flex;align-items:center;gap:6px}
 
-/* MAIN LAYOUT */
-main{display:grid;grid-template-columns:1fr 300px;gap:16px;margin-top:16px}
-#detalle{background:#fff;padding:14px;border-radius:8px;box-shadow:0 4px 12px rgba(2,6,23,.08)}
+/* Layout */
+main{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+#detalle{background:white;padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,.06)}
 #detalle h2{margin-bottom:8px}
 
-/* MALLA WRAPPER */
-#mallaWrapper{position:relative;overflow:auto;padding:8px;border-radius:8px;background:transparent}
+/* Malla area */
+#mallaArea{background:transparent;padding:6px;border-radius:12px;overflow:auto}
+.row{display:flex;gap:18px;padding:8px;align-items:flex-start;min-height:220px}
 
-/* 🔥 SVG ELIMINADO COMPLETAMENTE */
-#linesSvg{
-  display:none !important;
-  visibility:hidden !important;
-  opacity:0 !important;
-  width:0 !important;
-  height:0 !important;
-  pointer-events:none !important;
-}
-
-/* ROWS */
-.row{display:flex;gap:16px;padding:8px;min-height:140px;align-items:flex-start}
-.row + .row{margin-top:18px}
-
-/* COLUMNA DE CICLO */
+/* Columnas de ciclo */
 .col-ciclo{
-  background:linear-gradient(180deg,#fff,#fbfdff);
-  border-radius:8px;padding:10px;min-width:220px;box-shadow:0 6px 18px rgba(2,6,23,.06);
-  transition:transform .25s,box-shadow .25s;
+  min-width:240px;border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(2,6,23,.06);
+  display:flex;flex-direction:column;gap:10px;transition:transform .22s;
 }
-.col-ciclo:hover{transform:translateY(-6px)}
-.ciclo-header{font-weight:700;margin-bottom:10px;border-left:4px solid #2563eb;padding-left:8px;color:#0f172a}
+.col-ciclo:hover{transform:translateY(-8px)}
 
-/* LISTA DE CURSOS vertical */
-.lista-cursos{display:flex;flex-direction:column;gap:10px}
+/* ciclo header style */
+.ciclo-header{font-weight:800;padding:8px;border-radius:8px;color:white;display:inline-block}
 
-/* CURSO (tarjeta) */
+/* Lista de cursos vertical */
+.lista-cursos{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+
+/* Curso tarjeta */
 .curso{
-  background:#ffffff;border-radius:8px;padding:10px;border:1px solid #e6edf3;cursor:pointer;
-  display:flex;flex-direction:column;gap:6px;align-items:flex-start;transition:transform .18s,box-shadow .18s,background .18s;
-  position:relative;z-index:2;
+  background:linear-gradient(180deg,#ffffff,#fbfdff);
+  border-radius:10px;padding:10px;border:1px solid rgba(15,23,42,.06);
+  cursor:pointer;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;
+  transition:transform .18s,box-shadow .18s;
 }
-.curso:hover{transform:translateY(-4px);box-shadow:0 10px 18px rgba(15,23,42,.08)}
-.curso-nombre{font-weight:600;font-size:13px}
-.curso-prereq{font-size:11px;background:#eef2ff;padding:4px 6px;border-radius:6px}
+.curso:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(15,23,42,.08)}
+.curso .curso-nombre{font-weight:700;font-size:13px}
+.curso .curso-meta{font-size:12px;color:#475569}
 
-/* ESTADOS */
-.curso.aprobado{background:#16a34a;color:#fff;border-color:#10b981;box-shadow:0 6px 18px rgba(16,185,129,.12)}
-.curso.bloqueado{background:#f1f5f9;color:#64748b;border-color:#e2e8f0;cursor:not-allowed;opacity:.9}
-.curso.pendiente{background:#fff}
+/* estado badges */
+.curso .curso-prereq{position:absolute;left:10px;bottom:10px;padding:6px 8px;border-radius:999px;font-size:12px;background:rgba(15,23,42,.05)}
+.dependientes-badge{position:absolute;right:10px;top:10px;padding:6px 8px;border-radius:999px;font-size:12px;background:rgba(0,0,0,.06)}
 
-/* BADGES dependientes */
-.dependientes-badge{
-  position:absolute;right:8px;top:8px;background:#fde68a;padding:4px 6px;border-radius:999px;font-size:11px;color:#92400e;
-  box-shadow:0 6px 12px rgba(249,115,22,.06)
+/* estilos por estado */
+.curso.aprobado{box-shadow:0 12px 24px rgba(34,197,94,.12);color:#063f1a}
+.curso.bloqueado{opacity:.85}
+
+/* ==========================
+   Colores por CICLO (columnas)
+   ========================== */
+/* usaremos variables para poder mostrarlos en leyenda */
+:root{
+  --cycle-0: linear-gradient(180deg,#111827,#0f172a); /* nivelación - oscuro */
+  --cycle-1: linear-gradient(180deg,#60a5fa,#3b82f6);
+  --cycle-2: linear-gradient(180deg,#34d399,#10b981);
+  --cycle-3: linear-gradient(180deg,#a78bfa,#7c3aed);
+  --cycle-4: linear-gradient(180deg,#f97316,#fb923c);
+  --cycle-5: linear-gradient(180deg,#facc15,#eab308);
+  --cycle-6: linear-gradient(180deg,#ef4444,#f43f5e);
+  --cycle-7: linear-gradient(180deg,#94a3b8,#64748b);
+  --cycle-8: linear-gradient(180deg,#06b6d4,#0891b2);
+  --cycle-9: linear-gradient(180deg,#8b5cf6,#6d28d9);
+  --cycle-10: linear-gradient(180deg,#06b6d4,#06b6d4);
 }
 
-/* DEP COLORS */
-.dep-0{border-left:6px solid #e5e7eb}
-.dep-1{border-left:6px solid #60a5fa}
-.dep-2{border-left:6px solid #34d399}
-.dep-3{border-left:6px solid #f59e0b}
-.dep-4{border-left:6px solid #f43f5e}
+/* aplicamos background a header de cada ciclo usando data-cycle */
+.col-ciclo[data-cycle="Ciclo 0 (Nivelación)"] .ciclo-header{background:var(--cycle-0)}
+.col-ciclo[data-cycle="Ciclo 1"] .ciclo-header{background:var(--cycle-1)}
+.col-ciclo[data-cycle="Ciclo 2"] .ciclo-header{background:var(--cycle-2)}
+.col-ciclo[data-cycle="Ciclo 3"] .ciclo-header{background:var(--cycle-3)}
+.col-ciclo[data-cycle="Ciclo 4"] .ciclo-header{background:var(--cycle-4)}
+.col-ciclo[data-cycle="Ciclo 5"] .ciclo-header{background:var(--cycle-5)}
+.col-ciclo[data-cycle="Ciclo 6"] .ciclo-header{background:var(--cycle-6)}
+.col-ciclo[data-cycle="Ciclo 7"] .ciclo-header{background:var(--cycle-7)}
+.col-ciclo[data-cycle="Ciclo 8"] .ciclo-header{background:var(--cycle-8)}
+.col-ciclo[data-cycle="Ciclo 9"] .ciclo-header{background:var(--cycle-9)}
+.col-ciclo[data-cycle="Ciclo 10"] .ciclo-header{background:var(--cycle-10)}
 
-/* DARK THEME */
-body.dark{background:#0b1220;color:#e6eef8}
-body.dark .topbar{background:#0b1220}
-body.dark .col-ciclo{background:linear-gradient(180deg,#071026,#051022);color:#e6eef8}
-body.dark .curso{background:#071022;border-color:#0b1220;color:#e6eef8}
-body.dark .curso.aprobado{box-shadow:0 6px 18px rgba(16,185,129,.14)}
-body.dark .detalle{background:#071022;color:#e6eef8;box-shadow:0 6px 18px rgba(0,0,0,.4)}
-body.dark .controls input{background:#0b1220;color:#e6eef8;border:1px solid #1f2937}
+/* ==========================
+   Colores por RAMA (bloques dentro)
+   ========================== */
+/* Rama 1 - Ciencias Básicas (azul) */
+.rama-ciencias { background: linear-gradient(180deg,#f0f9ff,#e0f2fe); border-left:6px solid #3B82F6; }
+/* Rama 2 - Nutrición y Dietética (verde) */
+.rama-nutricion { background: linear-gradient(180deg,#ecfdf5,#dcfce7); border-left:6px solid #22C55E; }
+/* Rama 3 - Salud Pública (morado) */
+.rama-publica { background: linear-gradient(180deg,#faf5ff,#f3e8ff); border-left:6px solid #A855F7; }
+/* Rama 4 - Gestión / Empresa (naranja) */
+.rama-gestion { background: linear-gradient(180deg,#fff7ed,#fff1e6); border-left:6px solid #F97316; }
+/* Rama 5 - Comunicación / Humanidades (amarillo) */
+.rama-comunicacion { background: linear-gradient(180deg,#fffbeb,#fef3c7); border-left:6px solid #EAB308; }
+/* Rama 6 - Deportes (rojo) */
+.rama-deporte { background: linear-gradient(180deg,#fff1f2,#ffe4e6); border-left:6px solid #EF4444; }
+/* Rama 7 - Electivos / Complementarios (gris) */
+.rama-electivo { background: linear-gradient(180deg,#f8fafc,#f1f5f9); border-left:6px solid #6B7280; }
 
-/* RESPONSIVE */
-@media(max-width:1000px){main{grid-template-columns:1fr;}.controls{flex-wrap:wrap}.col-ciclo{min-width:180px}}
+/* Legend styles */
+.legend{margin-top:12px;font-size:13px}
+.legend .item{display:flex;gap:8px;align-items:center;margin:6px 0}
+.legend .swatch{width:38px;height:22px;border-radius:6px;border:1px solid rgba(15,23,42,.06)}
+
+/* Footer */
+footer{text-align:center;margin-top:18px;color:#475569}
+
+/* Dark theme tweaks */
+body.dark{background:linear-gradient(180deg,#031025,#041226);color:#e6eef8}
+body.dark .topbar{background:linear-gradient(90deg,#0b1220,#0b1220)}
+body.dark .col-ciclo{box-shadow:0 10px 30px rgba(0,0,0,.35)}
