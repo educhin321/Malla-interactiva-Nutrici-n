@@ -1,16 +1,195 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Malla Interactiva</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Malla Interactiva - INFOSIL</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <h1>Malla Interactiva</h1>
+  <header class="topbar">
+    <h1>Malla Interactiva - Plan de Estudios (INFOSIL)</h1>
+    <div class="controls">
+      <button id="resetBtn" title="Resetear estado">Resetear</button>
+      <button id="exportBtn" title="Exportar estado (JSON)">Exportar</button>
+      <a href="/mnt/data/INFOSIL.pdf" target="_blank" rel="noopener" title="Malla original (PDF)">Ver malla original (PDF)</a>
+    </div>
+  </header>
 
-    <div id="grid"></div>
+  <main>
+    <section id="mallaContainer" class="malla-container" aria-live="polite">
+      <!-- Las columnas por ciclo se generarán aquí -->
+    </section>
 
-    <script src="script.js"></script>
+    <aside id="detalle" class="detalle">
+      <h2>Detalle del curso</h2>
+      <div id="detalleContenido">Haz clic en un curso para ver más información.</div>
+    </aside>
+  </main>
+
+  <footer>
+    <small>Guardado local (localStorage). Estados persistirán en este navegador.</small>
+  </footer>
+
+  <script>
+  // Carga inicial de datos: cursos.json, render y lógica de desbloqueo.
+  (async function() {
+    const mallaContainer = document.getElementById('mallaContainer');
+    const detalleContenido = document.getElementById('detalleContenido');
+    const resetBtn = document.getElementById('resetBtn');
+    const exportBtn = document.getElementById('exportBtn');
+
+    // Estado persistente: { "Ciclo 1": {"BIOLOGÍA": true, ...}, ... } OR flat map of names
+    let estado = JSON.parse(localStorage.getItem('estadoCursos')) || {};
+
+    // Helper: get flat aprobado state by nombre (true/false)
+    function estaAprobado(nombre) {
+      return estado[nombre] === true;
+    }
+
+    // Guardar estado
+    function guardar() {
+      localStorage.setItem('estadoCursos', JSON.stringify(estado));
+    }
+
+    // Resetear estado
+    resetBtn.addEventListener('click', () => {
+      if (!confirm('¿Deseas resetear todos los cursos (quitar aprobados)?')) return;
+      estado = {};
+      guardar();
+      render(mapaCursos);
+    });
+
+    // Exportar estado JSON
+    exportBtn.addEventListener('click', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(estado, null, 2));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", "estadoCursos.json");
+      dlAnchor.click();
+    });
+
+    // Cargar cursos.json
+    let mapaCursos = {};
+    try {
+      const res = await fetch('cursos.json', {cache: "no-store"});
+      if (!res.ok) throw new Error('No se pudo cargar cursos.json');
+      mapaCursos = await res.json();
+    } catch (e) {
+      mallaContainer.innerHTML = '<p class="error">Error cargando cursos.json. Asegúrate de subirlo al mismo repositorio. (' + e.message + ')</p>';
+      return;
+    }
+
+    // Comprueba si los prerrequisitos están cumplidos.
+    // prerrequisitos en el JSON están definidos como arreglo de nombres de cursos.
+    function prerrequisitosCumplidos(prereqs) {
+      if (!prereqs || prereqs.length === 0) return true;
+      return prereqs.every(nombre => estaAprobado(nombre));
+    }
+
+    // Render principal: columnas por ciclo
+    function render(mapa) {
+      mallaContainer.innerHTML = '';
+      const ciclos = Object.keys(mapa).sort((a,b) => {
+        // Orden natural "Ciclo 1", "Ciclo 2", ...
+        const na = parseInt(a.replace(/\D/g,''),10) || 0;
+        const nb = parseInt(b.replace(/\D/g,''),10) || 0;
+        return na - nb;
+      });
+
+      ciclos.forEach(ciclo => {
+        const col = document.createElement('div');
+        col.className = 'col-ciclo';
+        const header = document.createElement('div');
+        header.className = 'ciclo-header';
+        header.textContent = ciclo;
+        col.appendChild(header);
+
+        const cursos = mapa[ciclo];
+        const list = document.createElement('div');
+        list.className = 'lista-cursos';
+
+        // Mantener el orden de inserción del JSON
+        Object.keys(cursos).forEach(nombreCurso => {
+          const prereqs = cursos[nombreCurso] || [];
+          const aprobado = estaAprobado(nombreCurso);
+          const desbloqueado = prerrequisitosCumplidos(prereqs);
+
+          const card = document.createElement('button');
+          card.className = 'curso';
+          card.setAttribute('type','button');
+          card.dataset.nombre = nombreCurso;
+
+          // Estados visuales
+          card.classList.toggle('aprobado', aprobado);
+          card.classList.toggle('bloqueado', !desbloqueado && !aprobado);
+
+          // Texto
+          const title = document.createElement('div');
+          title.className = 'curso-nombre';
+          title.textContent = nombreCurso;
+          card.appendChild(title);
+
+          // Badge de prerequisitos (si aplica)
+          if (prereqs.length > 0) {
+            const badge = document.createElement('div');
+            badge.className = 'curso-prereq';
+            const faltantes = prereqs.filter(p => !estaAprobado(p));
+            badge.textContent = faltantes.length === 0 ? 'Prer. OK' : `${faltantes.length} prereq`;
+            card.appendChild(badge);
+          }
+
+          // Click: si desbloqueado, alterna aprobado
+          card.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            if (!desbloqueado && !aprobado) {
+              // animación visual leve para comunicar bloqueo
+              card.classList.add('shake');
+              setTimeout(()=> card.classList.remove('shake'), 350);
+              return;
+            }
+            // alternar
+            estado[nombreCurso] = !aprobado;
+            if (estado[nombreCurso] === false) delete estado[nombreCurso]; // limpia false
+            guardar();
+            render(mapaCursos);
+            mostrarDetalle(nombreCurso, prereqs);
+          });
+
+          // Hover / focus muestra detalle
+          card.addEventListener('mouseenter', () => mostrarDetalle(nombreCurso, prereqs));
+          card.addEventListener('focus', () => mostrarDetalle(nombreCurso, prereqs));
+          list.appendChild(card);
+        });
+
+        col.appendChild(list);
+        mallaContainer.appendChild(col);
+      });
+    }
+
+    // Muestra detalle simple del curso en el side
+    function mostrarDetalle(nombre, prereqs) {
+      const aprobado = estaAprobado(nombre);
+      const prereqHtml = (prereqs && prereqs.length > 0)
+        ? `<ul>${prereqs.map(p => `<li>${p} ${estaAprobado(p) ? '✓' : '✗'}</li>`).join('')}</ul>`
+        : '<em>Sin prerrequisitos</em>';
+      detalleContenido.innerHTML = `
+        <h3>${nombre}</h3>
+        <p><strong>Estado:</strong> ${aprobado ? '<span class="estado aprobado">Aprobado</span>' : '<span class="estado pendiente">Pendiente</span>'}</p>
+        <p><strong>Prerrequisitos:</strong></p>
+        ${prereqHtml}
+      `;
+    }
+
+    // Render inicial
+    render(mapaCursos);
+
+    // Si hay algún curso aprobado en estado, mostrar el primero como detalle
+    const aprobados = Object.keys(estado || {}).filter(k => estado[k] === true);
+    if (aprobados.length > 0) {
+      mostrarDetalle(aprobados[0], (function findPrereqs(n){ for (let c in mapaCursos) if (mapaCursos[c][n]) return mapaCursos[c][n]; return []; })(aprobados[0]));
+    }
+  })();
+  </script>
 </body>
 </html>
