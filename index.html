@@ -3,54 +3,60 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Malla Interactiva - INFOSIL (mejorada)</title>
+  <title>Malla Interactiva - INFOSIL (Decorada)</title>
 
-  <!-- styles -->
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- jsPDF CDN para exportar PDF -->
+  <!-- jsPDF para exportar PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <!-- Firebase (opcional): SDKs (se inicializa en script.js con tu config) -->
+  <!-- Firebase SDKs (opcional) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <header class="topbar">
-    <div class="left">
-      <h1>Malla Interactiva - Plan de Estudios (INFOSIL)</h1>
-      <div class="meta">Interfaz mejorada • Ciclo 0 (Nivelación) • Guardado local + Firebase</div>
+    <div class="brand">
+      <h1>Malla Interactiva • Nutrición</h1>
+      <p class="subtitle">INFOSIL — Visualizador interactivo y colorido</p>
     </div>
 
     <div class="controls">
       <input id="searchInput" placeholder="Buscar curso..." aria-label="Buscar curso" />
+      <select id="filterBranch" title="Filtrar por rama">
+        <option value="">Todas las ramas</option>
+      </select>
       <button id="toggleTheme" title="Modo claro/oscuro">🌓</button>
-      <button id="saveCloudBtn" title="Guardar en la nube (Firebase)">Guardar nube</button>
-      <button id="loadCloudBtn" title="Cargar desde la nube (Firebase)">Cargar nube</button>
       <button id="resetBtn" title="Resetear estado">Resetear</button>
-      <button id="exportBtn" title="Exportar estado (JSON)">Exportar</button>
+      <button id="exportBtn" title="Exportar JSON">Exportar JSON</button>
       <button id="exportPdfBtn" title="Exportar PDF">Exportar PDF</button>
-      <a id="pdfLink" href="./INFOSIL.pdf" target="_blank" rel="noopener">Ver malla original (PDF)</a>
+      <a id="pdfLink" href="/mnt/data/INFOSIL.pdf" target="_blank" rel="noopener" title="Ver malla original (PDF)">
+        📄 Malla original (PDF)
+      </a>
     </div>
   </header>
 
   <main>
-    <section id="mallaWrapper">
-      <!-- SVG para líneas de prerrequisitos -->
-      <svg id="linesSvg" class="lines-svg" xmlns="http://www.w3.org/2000/svg"></svg>
-
+    <section id="mallaArea">
       <div id="topRow" class="row"></div>
       <div id="bottomRow" class="row"></div>
     </section>
 
     <aside id="detalle" class="detalle">
       <h2>Detalle del curso</h2>
-      <div id="detalleContenido">Haz clic en un curso para ver más información.</div>
+      <div id="detalleContenido">Haz clic en un curso o pásate por encima para ver su información.</div>
+
+      <div class="legend">
+        <h3>Leyenda</h3>
+        <div id="legendCycles"></div>
+        <hr/>
+        <div id="legendBranches"></div>
+      </div>
     </aside>
   </main>
 
   <footer>
-    <small>Guardado local (localStorage). Si deseas guardar en la nube: configura Firebase (ver instrucciones en la parte inferior).</small>
+    <small>Guardado: localStorage. Para nube: configurar Firebase en <code>script.js</code>.</small>
   </footer>
 
   <script src="script.js"></script>
