@@ -3,14 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Malla Interactiva - INFOSIL (Decorada)</title>
+  <title>Malla Interactiva - INFOSIL</title>
 
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- jsPDF para exportar PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <!-- Firebase SDKs (opcional) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
@@ -18,23 +15,18 @@
   <header class="topbar">
     <div class="brand">
       <h1>Malla Interactiva • Nutrición</h1>
-      <p class="subtitle">INFOSIL — Visualizador interactivo y colorido</p>
+      <p class="subtitle">INFOSIL — Versión decorada y dinámica</p>
     </div>
 
     <div class="controls">
-      <input id="searchInput" placeholder="Buscar curso..." aria-label="Buscar curso" />
-      <select id="filterBranch" title="Filtrar por rama">
-        <option value="">Todas las ramas</option>
-      </select>
-      <button id="toggleTheme" title="Modo claro/oscuro">🌓</button>
-      <button id="resetBtn" title="Resetear estado">Resetear</button>
-      <button id="exportBtn" title="Exportar JSON">Exportar JSON</button>
-      <button id="exportPdfBtn" title="Exportar PDF">Exportar PDF</button>
+      <input id="searchInput" placeholder="Buscar curso..." />
+      <select id="filterBranch"></select>
+      <button id="toggleTheme">🌓</button>
+      <button id="resetBtn">Reset</button>
+      <button id="exportBtn">Export JSON</button>
+      <button id="exportPdfBtn">Export PDF</button>
 
-      <!-- PDF local -->
-      <a id="pdfLink" href="./INFOSIL.pdf" target="_blank" rel="noopener" title="Ver malla original (PDF)">
-        📄 Malla original (PDF)
-      </a>
+      <a id="pdfLink" href="./INFOSIL.pdf" target="_blank">📄 PDF Oficial</a>
     </div>
   </header>
 
@@ -45,8 +37,8 @@
     </section>
 
     <aside id="detalle" class="detalle">
-      <h2>Detalle del curso</h2>
-      <div id="detalleContenido">Haz clic en un curso o pásate por encima para ver su información.</div>
+      <h2>Detalle del Curso</h2>
+      <div id="detalleContenido">Pasa el mouse sobre un curso.</div>
 
       <div class="legend">
         <h3>Leyenda</h3>
@@ -58,7 +50,7 @@
   </main>
 
   <footer>
-    <small>Guardado: localStorage. Para nube: configurar Firebase en <code>script.js</code>.</small>
+    <small>Versión extendida — Guardado local (con opción Firebase)</small>
   </footer>
 
   <script src="script.js"></script>
