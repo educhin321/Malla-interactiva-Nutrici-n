@@ -1,340 +1,305 @@
-// script.js - Malla interactiva mejorada
-// Requisitos: cursos.json en el mismo directorio, jsPDF y Firebase SDKs cargados en HTML.
+// script.js - versión sin líneas entre cursos
 
-// -------------------- UTILIDADES --------------------
-const $ = selector => document.querySelector(selector);
-const $$ = selector => Array.from(document.querySelectorAll(selector));
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
 
-// State
 let mapaCursos = {};
-let estado = JSON.parse(localStorage.getItem('estadoCursos')) || {};
-let firebaseConfigured = false;
-let firestore = null;
-const svg = document.getElementById('linesSvg');
+let estado = JSON.parse(localStorage.getItem("estadoCursos") || "{}");
 
 // DOM
-const topRow = document.getElementById('topRow');
-const bottomRow = document.getElementById('bottomRow');
-const detalleContenido = document.getElementById('detalleContenido');
-const searchInput = document.getElementById('searchInput');
-const toggleThemeBtn = document.getElementById('toggleTheme');
-const resetBtn = document.getElementById('resetBtn');
-const exportBtn = document.getElementById('exportBtn');
-const exportPdfBtn = document.getElementById('exportPdfBtn');
-const saveCloudBtn = document.getElementById('saveCloudBtn');
-const loadCloudBtn = document.getElementById('loadCloudBtn');
+const topRow = $("#topRow");
+const bottomRow = $("#bottomRow");
+const detalleContenido = $("#detalleContenido");
 
-// -------------------- CARGA DE CURSOS --------------------
+// Controles
+const searchInput = $("#searchInput");
+const toggleThemeBtn = $("#toggleTheme");
+const resetBtn = $("#resetBtn");
+const exportBtn = $("#exportBtn");
+const exportPdfBtn = $("#exportPdfBtn");
+
+// Nube (Firebase)
+const saveCloudBtn = $("#saveCloudBtn");
+const loadCloudBtn = $("#loadCloudBtn");
+let firestore = null;
+let firebaseConfigured = false;
+
+// ----------------------------
+// Cargar cursos
+// ----------------------------
 async function cargarCursos() {
   try {
-    const res = await fetch('cursos.json', {cache: "no-store"});
-    if (!res.ok) throw new Error('No se encontró cursos.json');
+    const res = await fetch("cursos.json", { cache: "no-store" });
     mapaCursos = await res.json();
     renderAll();
   } catch (e) {
-    document.getElementById('mallaWrapper').innerHTML = `<p class="error">Error cargando cursos.json: ${e.message}</p>`;
-    console.error(e);
+    console.error("Error cargando cursos.json", e);
+    $("#mallaWrapper").innerHTML = `<p>Error cargando cursos.json</p>`;
   }
 }
 
-// -------------------- HELPERS --------------------
-function estaAprobado(nombre) { return estado[nombre] === true; }
-function guardarLocal() { localStorage.setItem('estadoCursos', JSON.stringify(estado)); }
+// ----------------------------
+// Helpers
+// ----------------------------
+const estaAprobado = c => estado[c] === true;
+const guardarLocal = () =>
+  localStorage.setItem("estadoCursos", JSON.stringify(estado));
 
 function calcularDependientes(map) {
-  const depCount = {};
-  Object.keys(map).forEach(ciclo => { Object.keys(map[ciclo]).forEach(curso => depCount[curso] = 0); });
+  const dep = {};
+  Object.keys(map).forEach(ciclo =>
+    Object.keys(map[ciclo]).forEach(c => (dep[c] = 0))
+  );
+
   Object.keys(map).forEach(ciclo => {
-    Object.keys(map[ciclo]).forEach(curso => {
-      const prereqs = map[ciclo][curso] || [];
-      prereqs.forEach(p => { if (depCount[p] !== undefined) depCount[p]++ });
+    Object.keys(map[ciclo]).forEach(cur => {
+      mapaCursos[ciclo][cur].forEach(pr => {
+        if (dep[pr] != null) dep[pr]++;
+      });
     });
   });
-  return depCount;
+
+  return dep;
 }
 
-// -------------------- RENDER --------------------
+// ----------------------------
+// Render
+// ----------------------------
 function renderAll() {
-  topRow.innerHTML = '';
-  bottomRow.innerHTML = '';
-  svg.innerHTML = '';
+  topRow.innerHTML = "";
+  bottomRow.innerHTML = "";
 
-  const order = Object.keys(mapaCursos).sort((a,b)=> {
-    const na = parseInt(a.replace(/\D/g,'')) || 0;
-    const nb = parseInt(b.replace(/\D/g,'')) || 0;
+  const orden = Object.keys(mapaCursos).sort((a, b) => {
+    const na = parseInt(a.replace(/\D/g, "")) || 0;
+    const nb = parseInt(b.replace(/\D/g, "")) || 0;
     return na - nb;
   });
 
-  const top = order.filter(c => { const n = parseInt(c.replace(/\D/g,'')) || 0; return n <= 5; });
-  const bottom = order.filter(c => { const n = parseInt(c.replace(/\D/g,'')) || 0; return n >= 6; });
+  const arrTop = orden.filter(x => parseInt(x.replace(/\D/g, "")) <= 5);
+  const arrBot = orden.filter(x => parseInt(x.replace(/\D/g, "")) >= 6);
 
   const depCounts = calcularDependientes(mapaCursos);
 
-  function crearCol(ciclo) {
-    const col = document.createElement('div');
-    col.className = 'col-ciclo';
-    const header = document.createElement('div');
-    header.className = 'ciclo-header';
+  const crearCol = ciclo => {
+    const col = document.createElement("div");
+    col.className = "col-ciclo";
+
+    const header = document.createElement("div");
+    header.className = "ciclo-header";
     header.textContent = ciclo;
     col.appendChild(header);
 
-    const lista = document.createElement('div');
-    lista.className = 'lista-cursos';
+    const lista = document.createElement("div");
+    lista.className = "lista-cursos";
 
-    Object.keys(mapaCursos[ciclo]).forEach(nombreCurso => {
-      const prereqs = mapaCursos[ciclo][nombreCurso] || [];
-      const aprobado = estaAprobado(nombreCurso);
-      const desbloqueado = prereqs.every(p => estaAprobado(p));
-      const cursoBtn = document.createElement('button');
-      cursoBtn.className = 'curso';
-      cursoBtn.type = 'button';
-      cursoBtn.dataset.nombre = nombreCurso;
+    Object.keys(mapaCursos[ciclo]).forEach(curso => {
+      const prereq = mapaCursos[ciclo][curso];
+      const aprobado = estaAprobado(curso);
+      const desbloq = prereq.every(p => estaAprobado(p));
 
-      const dep = depCounts[nombreCurso] || 0;
-      const depClass = dep >= 4 ? 'dep-4' : `dep-${dep}`;
-      cursoBtn.classList.add(depClass);
+      const btn = document.createElement("button");
+      btn.className = "curso";
+      btn.dataset.nombre = curso;
 
-      if (aprobado) cursoBtn.classList.add('aprobado');
-      else if (!desbloqueado) cursoBtn.classList.add('bloqueado');
-      else cursoBtn.classList.add('pendiente');
+      const dep = depCounts[curso] || 0;
+      btn.classList.add(dep >= 4 ? "dep-4" : `dep-${dep}`);
 
-      const title = document.createElement('div');
-      title.className = 'curso-nombre';
-      title.textContent = nombreCurso;
-      cursoBtn.appendChild(title);
+      if (aprobado) btn.classList.add("aprobado");
+      else if (!desbloq) btn.classList.add("bloqueado");
+      else btn.classList.add("pendiente");
 
-      if (prereqs.length > 0) {
-        const badge = document.createElement('div');
-        badge.className = 'curso-prereq';
-        const faltantes = prereqs.filter(p => !estaAprobado(p));
-        badge.textContent = faltantes.length === 0 ? 'Prer. OK' : `${faltantes.length} prereq`;
-        cursoBtn.appendChild(badge);
+      const title = document.createElement("div");
+      title.className = "curso-nombre";
+      title.textContent = curso;
+      btn.appendChild(title);
+
+      if (prereq.length > 0) {
+        const badge = document.createElement("div");
+        badge.className = "curso-prereq";
+        badge.textContent = prereq.every(p => estaAprobado(p))
+          ? "Prer. OK"
+          : `${prereq.filter(p => !estaAprobado(p)).length} prereq`;
+        btn.appendChild(badge);
       }
 
       if (dep > 0) {
-        const db = document.createElement('div');
-        db.className = 'dependientes-badge';
-        db.textContent = dep;
-        cursoBtn.appendChild(db);
+        const b2 = document.createElement("div");
+        b2.className = "dependientes-badge";
+        b2.textContent = dep;
+        btn.appendChild(b2);
       }
 
-      cursoBtn.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        if (!desbloqueado && !aprobado) {
-          cursoBtn.classList.add('shake');
-          setTimeout(()=>cursoBtn.classList.remove('shake'),350);
-          return;
-        }
-        estado[nombreCurso] = !aprobado;
-        if (estado[nombreCurso] === false) delete estado[nombreCurso];
+      btn.addEventListener("click", () => {
+        if (!aprobado && !desbloq) return;
+
+        estado[curso] = !aprobado;
+        if (!estado[curso]) delete estado[curso];
+
         guardarLocal();
         renderAll();
-        mostrarDetalle(nombreCurso,prereqs);
+        mostrarDetalle(curso, prereq);
       });
 
-      cursoBtn.addEventListener('mouseenter', ()=> mostrarDetalle(nombreCurso,prereqs));
-      cursoBtn.addEventListener('focus', ()=> mostrarDetalle(nombreCurso,prereqs));
+      btn.addEventListener("mouseenter", () => mostrarDetalle(curso, prereq));
 
-      lista.appendChild(cursoBtn);
+      lista.appendChild(btn);
     });
 
     col.appendChild(lista);
     return col;
-  }
-
-  top.forEach(c => topRow.appendChild(crearCol(c)));
-  bottom.forEach(c => bottomRow.appendChild(crearCol(c)));
-
-  // requestAnimationFrame(drawLines);  // líneas desactivadas
-}
-
-// -------------------- LINES --------------------
-function getCenterRect(el) {
-  const r = el.getBoundingClientRect();
-  const svgR = svg.getBoundingClientRect();
-  return {
-    x: r.left + r.width/2 - svgR.left + svg.scrollLeft,
-    y: r.top + r.height/2 - svgR.top + svg.scrollTop,
-    elRect: r
   };
+
+  arrTop.forEach(c => topRow.appendChild(crearCol(c)));
+  arrBot.forEach(c => bottomRow.appendChild(crearCol(c)));
 }
 
-function clearSvg() { while (svg.firstChild) svg.removeChild(svg.firstChild); }
-
-function drawLines() {
-  clearSvg();
-  const cursoElems = {};
-  Array.from(document.querySelectorAll('.curso')).forEach(el => cursoElems[el.dataset.nombre] = el);
-
-  Object.keys(mapaCursos).forEach(ciclo => {
-    Object.keys(mapaCursos[ciclo]).forEach(curso => {
-      const prereqs = mapaCursos[ciclo][curso] || [];
-      prereqs.forEach(pr => {
-        const fromEl = cursoElems[pr];
-        const toEl = cursoElems[curso];
-        if (!fromEl || !toEl) return;
-        const a = getCenterRect(fromEl);
-        const b = getCenterRect(toEl);
-        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-        const dx = Math.abs(b.x - a.x);
-        const dir = b.x >= a.x ? 1 : -1;
-        const cp1x = a.x + dx*0.35*dir;
-        const cp1y = a.y;
-        const cp2x = b.x - dx*0.35*dir;
-        const cp2y = b.y;
-        const d = `M ${a.x} ${a.y} C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${b.x} ${b.y}`;
-        path.setAttribute('d', d);
-        const both = (estado[pr] === true) && (estado[curso] === true);
-        const one = (estado[pr] === true) && !(estado[curso] === true);
-        let stroke = '#9ca3af';
-        if (both) stroke = '#34d399';
-        else if (one) stroke = '#60a5fa';
-        else stroke = '#f87171';
-        path.setAttribute('stroke', stroke);
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke-width', both ? '3' : '2');
-        path.setAttribute('opacity', '0.95');
-        path.style.strokeDasharray = path.getTotalLength();
-        path.style.strokeDashoffset = path.getTotalLength();
-        svg.appendChild(path);
-        requestAnimationFrame(()=> {
-          path.style.transition = 'stroke-dashoffset 520ms ease-out';
-          path.style.strokeDashoffset = '0';
-        });
-      });
-    });
-  });
-}
-
-window.addEventListener('resize', ()=> { // requestAnimationFrame(drawLines);  // líneas desactivadas });
-document.getElementById('mallaWrapper').addEventListener('scroll', ()=> requestAnimationFrame(drawLines));
-
-// -------------------- DETALLE --------------------
+// ----------------------------
+// Detalle
+// ----------------------------
 function mostrarDetalle(nombre, prereqs) {
   const aprobado = estaAprobado(nombre);
-  const prereqHtml = (prereqs && prereqs.length>0) ? `<ul>${prereqs.map(p=>`<li>${p} ${estaAprobado(p)?'✓':'✗'}</li>`).join('')}</ul>` : '<em>Sin prerrequisitos</em>';
+  const lista =
+    prereqs.length > 0
+      ? `<ul>${prereqs
+          .map(p => `<li>${p}: ${estaAprobado(p) ? "✓" : "✗"}</li>`)
+          .join("")}</ul>`
+      : "<em>Sin prerrequisitos</em>";
+
   detalleContenido.innerHTML = `
     <h3>${nombre}</h3>
-    <p><strong>Estado:</strong> ${aprobado?'<span class="estado aprobado">Aprobado</span>':'<span class="estado pendiente">Pendiente</span>'}</p>
+    <p><strong>Estado:</strong> ${
+      aprobado ? "Aprobado" : "Pendiente"
+    }</p>
     <p><strong>Prerrequisitos:</strong></p>
-    ${prereqHtml}
+    ${lista}
   `;
 }
 
-// -------------------- BUSCADOR --------------------
-searchInput.addEventListener('input', (e)=> {
-  const q = (e.target.value || '').toLowerCase().trim();
-  Array.from(document.querySelectorAll('.col-ciclo')).forEach(col => {
-    let anyVisible = false;
-    Array.from(col.querySelectorAll('.curso')).forEach(c => {
-      const name = c.dataset.nombre.toLowerCase();
-      const match = name.includes(q);
-      c.style.display = match ? '' : 'none';
-      if (match) anyVisible = true;
+// ----------------------------
+// Buscador
+// ----------------------------
+searchInput.addEventListener("input", e => {
+  const q = e.target.value.toLowerCase().trim();
+
+  $$(".col-ciclo").forEach(col => {
+    let visible = false;
+    col.querySelectorAll(".curso").forEach(cur => {
+      const match = cur.dataset.nombre.toLowerCase().includes(q);
+      cur.style.display = match ? "" : "none";
+      if (match) visible = true;
     });
-    col.style.display = anyVisible ? '' : 'none';
+    col.style.display = visible ? "" : "none";
   });
-  // requestAnimationFrame(drawLines);  // líneas desactivadas
 });
 
-// -------------------- THEME --------------------
+// ----------------------------
+// Dark Mode
+// ----------------------------
 function setTheme(dark) {
-  document.body.classList.toggle('dark', !!dark);
-  localStorage.setItem('mallaThemeDark', !!dark);
+  document.body.classList.toggle("dark", dark);
+  localStorage.setItem("mallaThemeDark", dark);
 }
-toggleThemeBtn.addEventListener('click', ()=> {
-  const isDark = !document.body.classList.contains('dark');
-  setTheme(isDark);
-});
-setTheme(localStorage.getItem('mallaThemeDark') === 'true');
+toggleThemeBtn.addEventListener("click", () =>
+  setTheme(!document.body.classList.contains("dark"))
+);
+setTheme(localStorage.getItem("mallaThemeDark") === "true");
 
-// -------------------- RESET & EXPORT --------------------
-resetBtn.addEventListener('click', ()=> {
-  if (!confirm('¿Deseas resetear todos los cursos (quitar aprobados)?')) return;
+// ----------------------------
+// Reset
+// ----------------------------
+resetBtn.addEventListener("click", () => {
+  if (!confirm("¿Resetear todo?")) return;
   estado = {};
   guardarLocal();
   renderAll();
 });
 
-exportBtn.addEventListener('click', ()=> {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(estado,null,2));
-  const a = document.createElement('a'); a.href = dataStr; a.download = 'estadoCursos.json'; a.click();
+// ----------------------------
+// Export JSON
+// ----------------------------
+exportBtn.addEventListener("click", () => {
+  const url =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(estado, null, 2));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "estadoCursos.json";
+  a.click();
 });
 
-// -------------------- EXPORTAR A PDF (jsPDF) --------------------
-exportPdfBtn.addEventListener('click', async ()=> {
+// ----------------------------
+// Export PDF
+// ----------------------------
+exportPdfBtn.addEventListener("click", () => {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({unit:'pt',format:'a4'});
-  doc.setFontSize(14);
-  doc.text('Malla completada - INFOSIL', 40, 50);
-  let y = 80;
+  const doc = new jsPDF();
+
+  let y = 20;
+  doc.text("Malla - Estado Actual", 14, y); 
+  y += 10;
+
   Object.keys(mapaCursos).forEach(ciclo => {
-    doc.setFontSize(12);
-    doc.text(ciclo, 40, y); y += 18;
-    Object.keys(mapaCursos[ciclo]).forEach(curso => {
-      const estadoTxt = estaAprobado(curso) ? 'Aprobado' : 'Pendiente';
-      doc.setFontSize(10);
-      doc.text(`- ${curso} [${estadoTxt}]`, 60, y); y += 14;
-      if (y > 740) { doc.addPage(); y = 40; }
-    });
+    doc.text(ciclo, 14, y);
     y += 8;
+
+    Object.keys(mapaCursos[ciclo]).forEach(curso => {
+      doc.text(
+        `- ${curso} (${estaAprobado(curso) ? "Aprobado" : "Pendiente"})`,
+        18,
+        y
+      );
+      y += 7;
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+    });
+
+    y += 5;
   });
-  doc.save('malla_estado.pdf');
+
+  doc.save("malla.pdf");
 });
 
-// -------------------- FIREBASE --------------------
-const firebaseInit = () => {
+// ----------------------------
+// Firebase (Opcional)
+// ----------------------------
+function firebaseInit() {
   try {
-    const firebaseConfig = {
-      // apiKey: "TU_API_KEY",
-      // authDomain: "TU_PROYECTO.firebaseapp.com",
-      // projectId: "TU_PROYECTO",
-      // storageBucket: "TU_PROYECTO.appspot.com",
-      // messagingSenderId: "SENDER_ID",
-      // appId: "APP_ID"
+    const cfg = {
+      // INCLUYE TU CONFIG SI QUIERES USAR FIREBASE
     };
-    if (!firebaseConfig || !firebaseConfig.projectId) {
-      firebaseConfigured = false;
-      console.info('Firebase no configurado. Para usar la nube pega tu firebaseConfig en script.js.');
-      return;
-    }
-    const app = firebase.initializeApp(firebaseConfig);
+    if (!cfg.projectId) return;
+
+    firebase.initializeApp(cfg);
     firestore = firebase.firestore();
     firebaseConfigured = true;
-    console.info('Firebase inicializado (Firestore).');
   } catch (e) {
-    console.error('Error inicializando Firebase:', e);
-    firebaseConfigured = false;
+    console.error("Firebase error:", e);
   }
-};
+}
 firebaseInit();
 
-saveCloudBtn.addEventListener('click', async ()=> {
-  if (!firebaseConfigured) return alert('Firebase no está configurado. Pegá tu firebaseConfig en script.js.');
-  try {
-    const userId = 'default_user';
-    await firestore.collection('mallas').doc(userId).set({ estado, updatedAt: Date.now() });
-    alert('Guardado en la nube correctamente.');
-  } catch (e) {
-    console.error(e);
-    alert('Error guardando en la nube: ' + e.message);
-  }
-});
-loadCloudBtn.addEventListener('click', async ()=> {
-  if (!firebaseConfigured) return alert('Firebase no está configurado. Pegá tu firebaseConfig en script.js.');
-  try {
-    const userId = 'default_user';
-    const doc = await firestore.collection('mallas').doc(userId).get();
-    if (!doc.exists) return alert('No se encontró estado en la nube.');
-    estado = doc.data().estado || {};
-    guardarLocal();
-    renderAll();
-    alert('Estado cargado desde la nube.');
-  } catch (e) {
-    console.error(e);
-    alert('Error cargando desde la nube: ' + e.message);
-  }
+saveCloudBtn.addEventListener("click", async () => {
+  if (!firebaseConfigured) return alert("Firebase no configurado");
+  await firestore.collection("mallas").doc("user1").set({
+    estado,
+    updated: Date.now()
+  });
+  alert("Guardado en la nube.");
 });
 
-// -------------------- INICIALIZACIÓN --------------------
+loadCloudBtn.addEventListener("click", async () => {
+  if (!firebaseConfigured) return alert("Firebase no configurado");
+  const d = await firestore.collection("mallas").doc("user1").get();
+  if (!d.exists) return alert("No hay datos en nube.");
+  estado = d.data().estado || {};
+  guardarLocal();
+  renderAll();
+  alert("Cargado.");
+});
+
+// ----------------------------
+// Inicializar
+// ----------------------------
 cargarCursos();
