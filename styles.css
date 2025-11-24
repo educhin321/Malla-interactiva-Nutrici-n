@@ -51,7 +51,6 @@ main{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
 }
 .col-ciclo:hover{transform:translateY(-8px)}
 
-/* ciclo header style */
 .ciclo-header{font-weight:800;padding:8px;border-radius:8px;color:white;display:inline-block}
 
 /* Lista de cursos vertical */
@@ -72,16 +71,47 @@ main{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
 .curso .curso-prereq{position:absolute;left:10px;bottom:10px;padding:6px 8px;border-radius:999px;font-size:12px;background:rgba(15,23,42,.05)}
 .dependientes-badge{position:absolute;right:10px;top:10px;padding:6px 8px;border-radius:999px;font-size:12px;background:rgba(0,0,0,.06)}
 
-/* estilos por estado */
-.curso.aprobado{box-shadow:0 12px 24px rgba(34,197,94,.12);color:#063f1a}
-.curso.bloqueado{opacity:.85}
+/* ====== Cursos de INGLÉS (color amarillo) ====== */
+.rama-ingles {
+  background: linear-gradient(180deg,#fffbea,#fef08a) !important;
+  border-left:6px solid #facc15 !important;
+}
+
+/* ====== Cursos aprobados (verde fuerte claro) ====== */
+.curso.aprobado {
+  background: linear-gradient(180deg,#dcfce7,#bbf7d0) !important;
+  border: 2px solid #16a34a !important;
+  color:#064e3b !important;
+  box-shadow:0 6px 18px rgba(22,163,74,.25) !important;
+}
+
+/* ====== Cursos desbloqueados (prerrequisitos completos → azul) ====== */
+.curso.pendiente.desbloqueado {
+  background: linear-gradient(180deg,#dbeafe,#bfdbfe) !important;
+  border-left:4px solid #3b82f6 !important;
+}
+
+/* ====== Bloqueados ====== */
+.curso.bloqueado {
+  opacity:.75;
+}
 
 /* ==========================
-   Colores por CICLO (columnas)
+   Colores por RAMA (resto)
    ========================== */
-/* usaremos variables para poder mostrarlos en leyenda */
+.rama-ciencias { background: linear-gradient(180deg,#f0f9ff,#e0f2fe); border-left:6px solid #3B82F6; }
+.rama-nutricion { background: linear-gradient(180deg,#ecfdf5,#dcfce7); border-left:6px solid #22C55E; }
+.rama-publica { background: linear-gradient(180deg,#faf5ff,#f3e8ff); border-left:6px solid #A855F7; }
+.rama-gestion { background: linear-gradient(180deg,#fff7ed,#fff1e6); border-left:6px solid #F97316; }
+.rama-comunicacion { background: linear-gradient(180deg,#fffbeb,#fef3c7); border-left:6px solid #EAB308; }
+.rama-deporte { background: linear-gradient(180deg,#fff1f2,#ffe4e6); border-left:6px solid #EF4444; }
+.rama-electivo { background: linear-gradient(180deg,#f8fafc,#f1f5f9); border-left:6px solid #6B7280; }
+
+/* ==========================
+   Colores por CICLO
+   ========================== */
 :root{
-  --cycle-0: linear-gradient(180deg,#111827,#0f172a); /* nivelación - oscuro */
+  --cycle-0: linear-gradient(180deg,#111827,#0f172a);
   --cycle-1: linear-gradient(180deg,#60a5fa,#3b82f6);
   --cycle-2: linear-gradient(180deg,#34d399,#10b981);
   --cycle-3: linear-gradient(180deg,#a78bfa,#7c3aed);
@@ -94,7 +124,6 @@ main{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
   --cycle-10: linear-gradient(180deg,#06b6d4,#06b6d4);
 }
 
-/* aplicamos background a header de cada ciclo usando data-cycle */
 .col-ciclo[data-cycle="Ciclo 0 (Nivelación)"] .ciclo-header{background:var(--cycle-0)}
 .col-ciclo[data-cycle="Ciclo 1"] .ciclo-header{background:var(--cycle-1)}
 .col-ciclo[data-cycle="Ciclo 2"] .ciclo-header{background:var(--cycle-2)}
@@ -107,33 +136,14 @@ main{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
 .col-ciclo[data-cycle="Ciclo 9"] .ciclo-header{background:var(--cycle-9)}
 .col-ciclo[data-cycle="Ciclo 10"] .ciclo-header{background:var(--cycle-10)}
 
-/* ==========================
-   Colores por RAMA (bloques dentro)
-   ========================== */
-/* Rama 1 - Ciencias Básicas (azul) */
-.rama-ciencias { background: linear-gradient(180deg,#f0f9ff,#e0f2fe); border-left:6px solid #3B82F6; }
-/* Rama 2 - Nutrición y Dietética (verde) */
-.rama-nutricion { background: linear-gradient(180deg,#ecfdf5,#dcfce7); border-left:6px solid #22C55E; }
-/* Rama 3 - Salud Pública (morado) */
-.rama-publica { background: linear-gradient(180deg,#faf5ff,#f3e8ff); border-left:6px solid #A855F7; }
-/* Rama 4 - Gestión / Empresa (naranja) */
-.rama-gestion { background: linear-gradient(180deg,#fff7ed,#fff1e6); border-left:6px solid #F97316; }
-/* Rama 5 - Comunicación / Humanidades (amarillo) */
-.rama-comunicacion { background: linear-gradient(180deg,#fffbeb,#fef3c7); border-left:6px solid #EAB308; }
-/* Rama 6 - Deportes (rojo) */
-.rama-deporte { background: linear-gradient(180deg,#fff1f2,#ffe4e6); border-left:6px solid #EF4444; }
-/* Rama 7 - Electivos / Complementarios (gris) */
-.rama-electivo { background: linear-gradient(180deg,#f8fafc,#f1f5f9); border-left:6px solid #6B7280; }
-
 /* Legend styles */
 .legend{margin-top:12px;font-size:13px}
 .legend .item{display:flex;gap:8px;align-items:center;margin:6px 0}
 .legend .swatch{width:38px;height:22px;border-radius:6px;border:1px solid rgba(15,23,42,.06)}
 
-/* Footer */
 footer{text-align:center;margin-top:18px;color:#475569}
 
-/* Dark theme tweaks */
+/* Dark theme */
 body.dark{background:linear-gradient(180deg,#031025,#041226);color:#e6eef8}
 body.dark .topbar{background:linear-gradient(90deg,#0b1220,#0b1220)}
 body.dark .col-ciclo{box-shadow:0 10px 30px rgba(0,0,0,.35)}
