@@ -33,8 +33,15 @@ main{display:grid;grid-template-columns:1fr 300px;gap:16px;margin-top:16px}
 
 /* MALLA WRAPPER */
 #mallaWrapper{position:relative;overflow:auto;padding:8px;border-radius:8px;background:transparent}
-.lines-svg{
-  position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible;
+
+/* 🔥 SVG ELIMINADO COMPLETAMENTE */
+#linesSvg{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  width:0 !important;
+  height:0 !important;
+  pointer-events:none !important;
 }
 
 /* ROWS */
@@ -68,26 +75,18 @@ main{display:grid;grid-template-columns:1fr 300px;gap:16px;margin-top:16px}
 .curso.bloqueado{background:#f1f5f9;color:#64748b;border-color:#e2e8f0;cursor:not-allowed;opacity:.9}
 .curso.pendiente{background:#fff}
 
-/* BADGES dependientes (indican cuantos cursos desbloquea) */
+/* BADGES dependientes */
 .dependientes-badge{
   position:absolute;right:8px;top:8px;background:#fde68a;padding:4px 6px;border-radius:999px;font-size:11px;color:#92400e;
   box-shadow:0 6px 12px rgba(249,115,22,.06)
 }
 
-/* COLOR SEGÚN #DEPENDIENTES */
-/* definimos clases para 0-4+ dependientes */
+/* DEP COLORS */
 .dep-0{border-left:6px solid #e5e7eb}
 .dep-1{border-left:6px solid #60a5fa}
 .dep-2{border-left:6px solid #34d399}
 .dep-3{border-left:6px solid #f59e0b}
 .dep-4{border-left:6px solid #f43f5e}
-
-/* LÍNEAS (SVG) */
-.lines-svg line{
-  stroke-width:2;stroke-linecap:round;fill:none;opacity:.95;
-  transition:stroke .2s,opacity .2s;
-}
-.lines-svg path{transition:stroke .2s;}
 
 /* DARK THEME */
 body.dark{background:#0b1220;color:#e6eef8}
