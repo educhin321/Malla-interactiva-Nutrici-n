@@ -1,208 +1,102 @@
-/* ===== TIPOGRAFÍA & RESET ===== */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* Reset & base */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",Roboto,Arial,sans-serif;
+  background:#f4f6f8;color:#111;
+  padding:12px;
+  transition:background .3s,color .3s;
 }
 
-body {
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background: #f4f6f8;
-  color: #333;
-  padding: 10px;
+/* TOPBAR */
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  background:#111827;color:#fff;padding:12px;border-radius:8px;gap:12px;
+  flex-wrap:wrap;
+}
+.topbar .left h1{font-size:18px;margin-bottom:4px}
+.topbar .meta{font-size:12px;color:#cbd5e1}
+.controls{display:flex;gap:8px;align-items:center}
+.controls input{
+  padding:8px;border-radius:6px;border:1px solid #374151;background:#fff;
+  min-width:160px;
+}
+.controls button,a{
+  padding:8px 10px;border-radius:6px;border:none;background:#374151;color:#fff;
+  cursor:pointer;text-decoration:none;font-size:13px;
+}
+.controls button:hover,a:hover{opacity:.95}
+
+/* MAIN LAYOUT */
+main{display:grid;grid-template-columns:1fr 300px;gap:16px;margin-top:16px}
+#detalle{background:#fff;padding:14px;border-radius:8px;box-shadow:0 4px 12px rgba(2,6,23,.08)}
+#detalle h2{margin-bottom:8px}
+
+/* MALLA WRAPPER */
+#mallaWrapper{position:relative;overflow:auto;padding:8px;border-radius:8px;background:transparent}
+.lines-svg{
+  position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible;
 }
 
-/* ===== HEADER ===== */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #1f2937;
-  padding: 15px;
-  border-radius: 8px;
-  color: white;
-  flex-wrap: wrap;
-  gap: 10px;
+/* ROWS */
+.row{display:flex;gap:16px;padding:8px;min-height:140px;align-items:flex-start}
+.row + .row{margin-top:18px}
+
+/* COLUMNA DE CICLO */
+.col-ciclo{
+  background:linear-gradient(180deg,#fff,#fbfdff);
+  border-radius:8px;padding:10px;min-width:220px;box-shadow:0 6px 18px rgba(2,6,23,.06);
+  transition:transform .25s,box-shadow .25s;
+}
+.col-ciclo:hover{transform:translateY(-6px)}
+.ciclo-header{font-weight:700;margin-bottom:10px;border-left:4px solid #2563eb;padding-left:8px;color:#0f172a}
+
+/* LISTA DE CURSOS vertical */
+.lista-cursos{display:flex;flex-direction:column;gap:10px}
+
+/* CURSO (tarjeta) */
+.curso{
+  background:#ffffff;border-radius:8px;padding:10px;border:1px solid #e6edf3;cursor:pointer;
+  display:flex;flex-direction:column;gap:6px;align-items:flex-start;transition:transform .18s,box-shadow .18s,background .18s;
+  position:relative;z-index:2;
+}
+.curso:hover{transform:translateY(-4px);box-shadow:0 10px 18px rgba(15,23,42,.08)}
+.curso-nombre{font-weight:600;font-size:13px}
+.curso-prereq{font-size:11px;background:#eef2ff;padding:4px 6px;border-radius:6px}
+
+/* ESTADOS */
+.curso.aprobado{background:#16a34a;color:#fff;border-color:#10b981;box-shadow:0 6px 18px rgba(16,185,129,.12)}
+.curso.bloqueado{background:#f1f5f9;color:#64748b;border-color:#e2e8f0;cursor:not-allowed;opacity:.9}
+.curso.pendiente{background:#fff}
+
+/* BADGES dependientes (indican cuantos cursos desbloquea) */
+.dependientes-badge{
+  position:absolute;right:8px;top:8px;background:#fde68a;padding:4px 6px;border-radius:999px;font-size:11px;color:#92400e;
+  box-shadow:0 6px 12px rgba(249,115,22,.06)
 }
 
-.topbar h1 {
-  font-size: 22px;
-  font-weight: 600;
+/* COLOR SEGÚN #DEPENDIENTES */
+/* definimos clases para 0-4+ dependientes */
+.dep-0{border-left:6px solid #e5e7eb}
+.dep-1{border-left:6px solid #60a5fa}
+.dep-2{border-left:6px solid #34d399}
+.dep-3{border-left:6px solid #f59e0b}
+.dep-4{border-left:6px solid #f43f5e}
+
+/* LÍNEAS (SVG) */
+.lines-svg line{
+  stroke-width:2;stroke-linecap:round;fill:none;opacity:.95;
+  transition:stroke .2s,opacity .2s;
 }
+.lines-svg path{transition:stroke .2s;}
 
-.topbar .controls {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
+/* DARK THEME */
+body.dark{background:#0b1220;color:#e6eef8}
+body.dark .topbar{background:#0b1220}
+body.dark .col-ciclo{background:linear-gradient(180deg,#071026,#051022);color:#e6eef8}
+body.dark .curso{background:#071022;border-color:#0b1220;color:#e6eef8}
+body.dark .curso.aprobado{box-shadow:0 6px 18px rgba(16,185,129,.14)}
+body.dark .detalle{background:#071022;color:#e6eef8;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+body.dark .controls input{background:#0b1220;color:#e6eef8;border:1px solid #1f2937}
 
-.topbar button,
-.topbar a {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  background: #374151;
-  color: white;
-  text-decoration: none;
-  transition: background .2s;
-}
-
-.topbar button:hover,
-.topbar a:hover {
-  background: #4b5563;
-}
-
-/* ===== LAYOUT PRINCIPAL ===== */
-main {
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-/* ===== COLUMNAS DE CICLO ===== */
-.malla-container {
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  padding-bottom: 20px;
-}
-
-.col-ciclo {
-  background: white;
-  border-radius: 8px;
-  padding: 12px;
-  min-width: 220px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.ciclo-header {
-  font-size: 18px;
-  font-weight: bold;
-  color: #1f2937;
-  margin-bottom: 12px;
-  border-left: 4px solid #2563eb;
-  padding-left: 8px;
-}
-
-.lista-cursos {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* ===== TARJETAS DE CURSOS ===== */
-.curso {
-  background: #ffffff;
-  padding: 10px;
-  text-align: left;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  cursor: pointer;
-  transition: .2s;
-  position: relative;
-}
-
-.curso:hover {
-  background: #f3f4f6;
-}
-
-.curso.aprobado {
-  background: #34d399;
-  border-color: #10b981;
-  color: #ffffff;
-}
-
-.curso.bloqueado {
-  background: #e5e7eb;
-  color: #6b7280;
-  cursor: not-allowed;
-}
-
-/* Nombre del curso */
-.curso-nombre {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-/* Badge de prerrequisitos */
-.curso-prereq {
-  background: #e5e7eb;
-  color: #374151;
-  font-size: 11px;
-  padding: 3px 6px;
-  border-radius: 4px;
-  display: inline-block;
-  margin-top: 6px;
-}
-
-/* Animación para cursos bloqueados al click */
-@keyframes shakeAnim {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-3px); }
-  50% { transform: translateX(3px); }
-  75% { transform: translateX(-3px); }
-  100% { transform: translateX(0); }
-}
-
-.shake {
-  animation: shakeAnim .3s;
-}
-
-/* ===== PANEL DE DETALLE ===== */
-.detalle {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  height: fit-content;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.detalle h2 {
-  margin-bottom: 10px;
-}
-
-.detalle h3 {
-  margin-bottom: 5px;
-  font-size: 17px;
-}
-
-.estado.aprobado {
-  color: #10b981;
-  font-weight: bold;
-}
-
-.estado.pendiente {
-  color: #ef4444;
-  font-weight: bold;
-}
-
-/* ===== FOOTER ===== */
-footer {
-  margin-top: 20px;
-  text-align: center;
-  color: #6b7280;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 900px) {
-  main {
-    grid-template-columns: 1fr;
-  }
-
-  .detalle {
-    order: -1;
-  }
-}
-
-@media (max-width: 600px) {
-  .topbar h1 {
-    font-size: 18px;
-  }
-
-  .col-ciclo {
-    min-width: 180px;
-  }
-}
+/* RESPONSIVE */
+@media(max-width:1000px){main{grid-template-columns:1fr;}.controls{flex-wrap:wrap}.col-ciclo{min-width:180px}}
