@@ -62,13 +62,13 @@ main{
 
 /* ===============================
    CURSOS — colores según estado
-   - Base: rojo #821010
+   - Base: rojo #C23030
    - Available by default (no prereqs): amarillo #F0F547
    - Desbloqueado (prereqs cumplidos): Azul oscuro #5A6EED
    - Aprobado: Verde Claro #64FA64
 ================================*/
 .curso{
-  background:#821010 !important;
+  background:#C23030 !important;
   color:white !important;
   border:none !important;
   border-radius:10px;padding:12px;font-weight:700;text-align:center;
