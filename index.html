@@ -4,29 +4,24 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Malla Interactiva - INFOSIL</title>
-
   <link rel="stylesheet" href="styles.css" />
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
       <h1>Malla Interactiva • Nutrición</h1>
-      <p class="subtitle">INFOSIL — Versión decorada y dinámica</p>
+      <p class="subtitle">INFOSIL — Versión corregida</p>
     </div>
 
     <div class="controls">
       <input id="searchInput" placeholder="Buscar curso..." />
-      <select id="filterBranch"></select>
+      <select id="filterBranch" style="display:none"></select> <!-- oculto, no usado -->
       <button id="toggleTheme">🌓</button>
       <button id="resetBtn">Reset</button>
       <button id="exportBtn">Export JSON</button>
       <button id="exportPdfBtn">Export PDF</button>
-
-      <a id="pdfLink" href="./INFOSIL.pdf" target="_blank">📄 PDF Oficial</a>
+      <a id="pdfLink" href="/mnt/data/INFOSIL.pdf" target="_blank" rel="noopener">📄 PDF Oficial</a>
     </div>
   </header>
 
@@ -37,20 +32,15 @@
     </section>
 
     <aside id="detalle" class="detalle">
-      <h2>Detalle del Curso</h2>
-      <div id="detalleContenido">Pasa el mouse sobre un curso.</div>
-
-      <div class="legend">
-        <h3>Leyenda</h3>
-        <div id="legendCycles"></div>
-        <hr/>
-        <div id="legendBranches"></div>
+      <div id="detalleContenido">
+        <h2>Detalle del Curso</h2>
+        <p>Pasa el cursor sobre un curso para ver detalles aquí.</p>
       </div>
     </aside>
   </main>
 
   <footer>
-    <small>Versión extendida — Guardado local (con opción Firebase)</small>
+    <small>Guardado local (localStorage)</small>
   </footer>
 
   <script src="script.js"></script>
