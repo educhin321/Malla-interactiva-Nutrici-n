@@ -1,32 +1,31 @@
 /* ===============================
-   ESTILOS GENERALES
+   RESET PRINCIPAL
 ================================*/
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:Inter,Arial;
-  background:linear-gradient(180deg,#f7fbff,#eef6ff);
+  background:#f2f6fa;
   color:#0f172a;
   padding:16px;
 }
-.topbar{
-  background:linear-gradient(90deg,#0ea5e9,#7c3aed);
-  color:white;padding:14px;border-radius:12px;
-  display:flex;justify-content:space-between;align-items:center;
-}
 
 /* ===============================
-   CONTROLES SUPERIORES
+   TOPBAR
 ================================*/
-.controls{
-  display:flex;gap:10px;align-items:center;
+.topbar{
+  background:linear-gradient(90deg,#0060df,#8338ec);
+  color:white;padding:14px;border-radius:12px;
+  display:flex;justify-content:space-between;align-items:center;
 }
 .controls input,
 .controls select,
 .controls button,
 .controls a{
   padding:8px 10px;border-radius:8px;border:none;
-  background:rgba(255,255,255,.12);color:white;
-  text-decoration:none;cursor:pointer;
+  background:rgba(255,255,255,.15);color:white;
+  cursor:pointer;
+  text-decoration:none;
+  font-weight:600;
 }
 
 /* ===============================
@@ -41,126 +40,72 @@ main{
 }
 
 /* ===============================
-   MALLA — FILAS SUPERIOR E INFERIOR
+   FILAS DE LA MALLA
 ================================*/
-.row{display:flex;gap:18px;padding:8px;}
+.row{display:flex;gap:18px;padding:4px;}
 
 /* ===============================
-   COLUMNAS DE CICLO
+   CICLOS — FONDO Y TITULO
 ================================*/
 .col-ciclo{
-  min-width:240px;background:white;border-radius:12px;
-  padding:12px;display:flex;flex-direction:column;gap:10px;
+  min-width:240px;border-radius:12px;
+  padding:12px;
+  display:flex;flex-direction:column;gap:10px;
   box-shadow:0 12px 28px rgba(0,0,0,.06);
 }
+
 .ciclo-header{
-  font-weight:800;color:white;padding:8px;border-radius:8px;
+  font-size:20px;
+  font-weight:900;
+  color:#000 !important;
+  padding:8px;
   text-align:center;
+  border-radius:10px;
+  background:white;
+  text-transform:uppercase;
 }
 
+/* FONDOS POR CICLO — PASTEL HERMOSOS */
+.col-ciclo[data-cycle="Ciclo 0 (Nivelación)"] { background:#FFE0E0; }
+.col-ciclo[data-cycle="Ciclo 1"] { background:#E0F7FF; }
+.col-ciclo[data-cycle="Ciclo 2"] { background:#E8FFE0; }
+.col-ciclo[data-cycle="Ciclo 3"] { background:#FFF3C4; }
+.col-ciclo[data-cycle="Ciclo 4"] { background:#F0E0FF; }
+.col-ciclo[data-cycle="Ciclo 5"] { background:#FFEAD4; }
+.col-ciclo[data-cycle="Ciclo 6"] { background:#FCE0FF; }
+.col-ciclo[data-cycle="Ciclo 7"] { background:#E0FFE4; }
+.col-ciclo[data-cycle="Ciclo 8"] { background:#E6E6FF; }
+.col-ciclo[data-cycle="Ciclo 9"] { background:#F9E0FF; }
+.col-ciclo[data-cycle="Ciclo 10"] { background:#E0FFF9; }
+
 /* ===============================
-   CURSO — ESTILO BASE (GRIS)
+   CURSO — BASE GRIS OSCURO
 ================================*/
 .curso{
-  background:linear-gradient(180deg,#f1f5f9,#e2e8f0) !important;
-  border-radius:10px;padding:10px;
-  border-left:10px solid transparent !important;
+  background:#4F4A4A !important;
+  color:white !important;
+  border:none !important;
+  border-radius:10px;
+  padding:12px;
+  font-weight:600;
   position:relative;
-  display:flex;flex-direction:column;gap:6px;
-  cursor:pointer;color:#334155 !important;
-  opacity:.92;transition:.25s;
+  opacity:0.9;
+  transition:.22s;
 }
+
 .curso:hover{
-  transform:translateY(-6px);
-  box-shadow:0 14px 28px rgba(0,0,0,.08);
+  opacity:1;
+  transform:translateY(-4px);
 }
 
 /* ===============================
-   BARRA LATERAL — COLOR ORIGINAL
+   QUITAR COLORES DE RAMA COMPLETAMENTE
 ================================*/
 .curso::before{
-  content:"";position:absolute;left:0;top:0;
-  width:10px;height:100%;border-radius:10px 0 0 10px;
+  display:none !important;
 }
 
-/* Colores laterales por rama */
-.rama-ciencias::before{background:#3B82F6}
-.rama-nutricion::before{background:#22C55E}
-.rama-publica::before{background:#A855F7}
-.rama-gestion::before{background:#F97316}
-.rama-comunicacion::before{background:#EAB308}
-.rama-deporte::before{background:#EF4444}
-.rama-electivo::before{background:#6B7280}
-.rama-ingles::before{background:#FACC15}
-
 /* ===============================
-   ESTADO: CURSO DESBLOQUEADO
-   → Recupera su color original COMPLETO
+   DESBLOQUEADO → VERDE BRILLANTE
 ================================*/
 .curso.desbloqueado{
-  opacity:1!important;
-}
-
-/* Restauración de colores por rama */
-.curso.desbloqueado.rama-ciencias{
-  background:linear-gradient(180deg,#f0f9ff,#e0f2fe)!important;
-}
-.curso.desbloqueado.rama-nutricion{
-  background:linear-gradient(180deg,#ecfdf5,#dcfce7)!important;
-}
-.curso.desbloqueado.rama-publica{
-  background:linear-gradient(180deg,#faf5ff,#f3e8ff)!important;
-}
-.curso.desbloqueado.rama-gestion{
-  background:linear-gradient(180deg,#fff7ed,#fff1e6)!important;
-}
-.curso.desbloqueado.rama-comunicacion{
-  background:linear-gradient(180deg,#fffbeb,#fef3c7)!important;
-}
-.curso.desbloqueado.rama-deporte{
-  background:linear-gradient(180deg,#fff1f2,#ffe4e6)!important;
-}
-.curso.desbloqueado.rama-electivo{
-  background:linear-gradient(180deg,#f8fafc,#f1f5f9)!important;
-}
-.curso.desbloqueado.rama-ingles{
-  background:linear-gradient(180deg,#fffbea,#fef08a)!important;
-}
-
-/* ===============================
-   ESTADO: APROBADO (VERDE)
-================================*/
-.curso.aprobado{
-  background:linear-gradient(180deg,#dcfce7,#bbf7d0)!important;
-  border:2px solid #16a34a!important;
-  color:#064e3b!important;
-}
-
-/* ===============================
-   PRERREQUISITOS / INFO
-================================*/
-.curso-nombre{font-weight:700}
-.curso-meta{font-size:12px;color:#475569}
-.curso-prereq{
-  background:rgba(0,0,0,.05);
-  padding:4px 6px;border-radius:8px;
-  position:absolute;bottom:8px;left:12px;
-}
-.dependientes-badge{
-  background:rgba(0,0,0,.06);
-  padding:4px 6px;border-radius:8px;
-  position:absolute;top:8px;right:12px;
-}
-
-/* ===============================
-   DARK THEME
-================================*/
-body.dark{
-  background:#0f172a;color:#e2e8f0;
-}
-
-/* ===============================
-   LEYENDA
-================================*/
-.legend .item{display:flex;align-items:center;gap:8px;margin:6px 0}
-.legend .swatch{width:40px;height:20px;border-radius:6px}
