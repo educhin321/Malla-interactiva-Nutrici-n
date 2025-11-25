@@ -17,55 +17,45 @@ body{
   color:white;padding:14px;border-radius:12px;
   display:flex;justify-content:space-between;align-items:center;
 }
-.controls input,
-.controls select,
-.controls button,
-.controls a{
-  padding:8px 10px;border-radius:8px;border:none;
-  background:rgba(255,255,255,.15);color:white;
-  cursor:pointer;
-  text-decoration:none;
-  font-weight:600;
-}
 
 /* ===============================
-   LAYOUT PRINCIPAL
+   LAYOUT
 ================================*/
 main{
   display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px;
 }
+
 #detalle{
   background:white;padding:14px;border-radius:12px;
   box-shadow:0 6px 20px rgba(0,0,0,.06);
 }
 
 /* ===============================
-   FILAS DE LA MALLA
-================================*/
-.row{display:flex;gap:18px;padding:4px;}
-
-/* ===============================
-   CICLOS — FONDO Y TITULO
+   CICLOS
 ================================*/
 .col-ciclo{
-  min-width:240px;border-radius:12px;
+  min-width:240px;
   padding:12px;
-  display:flex;flex-direction:column;gap:10px;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
   box-shadow:0 12px 28px rgba(0,0,0,.06);
 }
 
+/* TÍTULO DEL CICLO */
 .ciclo-header{
   font-size:20px;
   font-weight:900;
-  color:#000 !important;
+  color:#000;
+  background:white;
   padding:8px;
   text-align:center;
   border-radius:10px;
-  background:white;
-  text-transform:uppercase;
+  margin-bottom:6px;
 }
 
-/* FONDOS POR CICLO — PASTEL HERMOSOS */
+/* COLORES DE FONDO POR CICLO */
 .col-ciclo[data-cycle="Ciclo 0 (Nivelación)"] { background:#FFE0E0; }
 .col-ciclo[data-cycle="Ciclo 1"] { background:#E0F7FF; }
 .col-ciclo[data-cycle="Ciclo 2"] { background:#E8FFE0; }
@@ -79,33 +69,58 @@ main{
 .col-ciclo[data-cycle="Ciclo 10"] { background:#E0FFF9; }
 
 /* ===============================
-   CURSO — BASE GRIS OSCURO
+   CURSOS
 ================================*/
+
+/* BASE: TODOS GRISES  */
 .curso{
   background:#4F4A4A !important;
   color:white !important;
   border:none !important;
   border-radius:10px;
-  padding:12px;
   font-weight:600;
-  position:relative;
-  opacity:0.9;
-  transition:.22s;
+  padding:12px;
+  transition:.2s;
 }
 
-.curso:hover{
-  opacity:1;
-  transform:translateY(-4px);
+/* CURSO DESBLOQUEADO → VERDE */
+.curso.desbloqueado{
+  background:#6DE639 !important;
+  color:#1b1b1b !important;
+  font-weight:800;
+}
+
+/* CURSO APROBADO → VERDE OSCURO */
+.curso.aprobado{
+  background:#4BD42A !important;
+  border:2px solid #217f0e !important;
+  color:white !important;
 }
 
 /* ===============================
-   QUITAR COLORES DE RAMA COMPLETAMENTE
+   ELIMINAR PREREQS Y NÚMEROS
 ================================*/
-.curso::before{
+.curso-prereq,
+.dependientes-badge,
+.curso small,
+.curso span,
+.curso div.badge,
+.curso .badge{
   display:none !important;
 }
 
 /* ===============================
-   DESBLOQUEADO → VERDE BRILLANTE
+   ELIMINAR FRANJAS LATERALES (ANTES RAMAS)
 ================================*/
-.curso.desbloqueado{
+.curso::before{
+  display:none !important;
+  content:none !important;
+}
+
+/* ===============================
+   DARK MODE
+================================*/
+body.dark{
+  background:#0f172a;
+}
+body.dark .col-ciclo{ filter:brightness(0.85); }
