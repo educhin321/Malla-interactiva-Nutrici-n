@@ -62,14 +62,14 @@ main{
 
 /* ===============================
    CURSOS — colores según estado
-   - Base: gris #A3A2A2
+   - Base: rojo #821010
    - Available by default (no prereqs): amarillo #F0F547
-   - Desbloqueado (prereqs cumplidos): verde claro #64FA64
-   - Aprobado: Celeste claro #20DFF5
+   - Desbloqueado (prereqs cumplidos): Azul oscuro #5A6EED
+   - Aprobado: Verde Claro #64FA64
 ================================*/
 .curso{
-  background:#A3A2A2 !important;
-  color:#000 !important;
+  background:#821010 !important;
+  color:white !important;
   border:none !important;
   border-radius:10px;padding:12px;font-weight:700;text-align:center;
   transition:transform .12s, box-shadow .12s;
@@ -84,14 +84,14 @@ main{
 
 /* desbloqueado */
 .curso.desbloqueado{
-  background:#64FA64 !important;
+  background:#5A6EED !important;
   color:#000 !important;
   font-weight:800;
 }
 
 /* aprobado */
 .curso.aprobado{
-  background:#20DFF5 !important;
+  background:#64FA64 !important;
   color:#000 !important;
 }
 
